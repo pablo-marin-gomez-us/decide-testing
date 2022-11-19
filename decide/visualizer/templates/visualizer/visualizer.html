@@ -13,23 +13,24 @@
     <div id="app-visualizer">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <b-navbar-brand tag="h1"> {% trans "decide" %}</b-navbar-brand>
         </b-navbar>
 
         <div class="voting container">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
+            <h3>{% trans "vName" %}: [[ voting.name ]]</h3>
 
-            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
+            <h2 v-if="!voting.start_date">{% trans "nonstarted" %}</h2>
+            <h2 v-else-if="!voting.end_date">{% trans "running" %}</h2>
             <div v-else>
-                <h2 class="heading">Resultados:</h2>
+                <h2 class="heading"> {% trans "results" %}</h2>
 
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
+                            <th>{% trans "option" %}</th>
+                            <th>{% trans "points" %}</th>
+                            <th>{% trans "votes" %}</th>
                         </tr>
                     </thead>
                     <tbody>

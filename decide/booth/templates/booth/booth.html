@@ -14,7 +14,7 @@
     <div id="app-booth">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <b-navbar-brand tag="h1">{% trans "decide" %}</b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
                     <b-nav-item href="#" v-on:click="decideLogout">
                         {% trans "logout" %}
@@ -27,7 +27,8 @@
         </b-alert>
 
         <div class="voting">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
+            <h3>{% trans "vName" %}: [[ voting.name ]]</h3>
 
             <!-- Register -->
             <b-form @submit="onSubmitLogin" v-if="signup">
@@ -47,7 +48,8 @@
                         v-model="form.password"
                         required />
                 </b-form-group>
-                <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
+                <br>
+                    <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
 
             <!-- Voting -->
