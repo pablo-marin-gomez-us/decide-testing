@@ -18,24 +18,34 @@
 
         <div class="voting container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-
+            <h3>Descripción de la votación: [[ voting.desc ]]</h2>
+            <h3>Fecha de inicio de la votación: [[ startDate ]]</h3>
+            <h3>Fecha de fin de la votación: [[ endDate ]]</h3>
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
             <h2 v-else-if="!voting.end_date">Votación en curso</h2>
+            
             <div v-else>
+                <br>
                 <h2 class="heading">Resultados:</h2>
-
+                <div v-if="voting.ecaños!=0">
+                    <h3>Número de escaños a repartir: [[ voting.seats ]]</h3>
+                    <h3>Porcentaje mínimo para tener representación: [[ voting.min_percentage_representation ]]% de los votos totales</h3>
+                    <p> El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos</p>
+                </div>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Opción</th>
-                            <th>Puntuación</th>
+                            <th v-if="voting.escaños!=0">Escaños</th>
+                            <th v-if="voting.escaños==0">Puntuación</th>
                             <th>Votos</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
                             <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
+                            <td v-if="voting.escaños!=0">[[opt.postproc]]</td>
+                            <td v-if="voting.escaños==0">[[opt.postproc]]</td>
                             <td class="text-muted">[[opt.votes]]</td>
                         </tr>
                     </tbody>
@@ -54,11 +64,15 @@
 
     <script>
         var voting = {{voting|safe}};
+        var startDate = new Date(voting.start_date).toLocaleString();
+        var endDate = new Date(voting.end_date).toLocaleString();
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
             data: {
-                voting: voting
+                voting: voting,
+                startDate: startDate,
+                endDate: endDate,
             }
         })
     </script>

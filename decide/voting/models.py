@@ -2,10 +2,26 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from base import mods
 from base.models import Auth, Key
 
+class RangeIntegerField(models.IntegerField):
+    def __init__(self, *args, **kwargs):
+        validators = kwargs.pop("validators", [])
+        
+        # turn min_value and max_value params into validators
+        min_value = kwargs.pop("min_value", None)
+        if min_value is not None:
+            validators.append(MinValueValidator(min_value))
+        max_value = kwargs.pop("max_value", None)
+        if max_value is not None:
+            validators.append(MaxValueValidator(max_value))
+
+        kwargs["validators"] = validators
+
+        super().__init__(*args, **kwargs)
 
 class Question(models.Model):
     desc = models.TextField()
@@ -32,6 +48,8 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+    seats = models.PositiveIntegerField(default=0)
+    min_percentage_representation = RangeIntegerField(min_value=0, max_value=100, default=5)
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -100,24 +118,45 @@ class Voting(models.Model):
     def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
+        seats = self.seats
+        min_percentage_representation = self.min_percentage_representation
 
-        opts = []
-        for opt in options:
-            if isinstance(tally, list):
-                votes = tally.count(opt.number)
-            else:
-                votes = 0
-            opts.append({
-                'option': opt.option,
-                'number': opt.number,
-                'votes': votes
-            })
+        if seats==0:
+            opts = []
+            for opt in options:
+                if isinstance(tally, list):
+                    votes = tally.count(opt.number)
+                else:
+                    votes = 0
+                opts.append({
+                    'option': opt.option,
+                    'number': opt.number,
+                    'votes': votes
+                })
 
-        data = { 'type': 'IDENTITY', 'options': opts }
-        postp = mods.post('postproc', json=data)
+            data = { 'type': 'IDENTITY', 'options': opts }
+            postp = mods.post('postproc', json=data)
 
-        self.postproc = postp
-        self.save()
+            self.postproc = postp
+            self.save()
+        else:
+            opts = []
+            for opt in options:
+                if isinstance(tally, list):
+                    votes = tally.count(opt.number)
+                else:
+                    votes = 0
+                opts.append({
+                    'option': opt.option,
+                    'number': opt.number,
+                    'votes': votes
+                })
+
+            data = { 'type': 'IDENTITY', 'options': opts }
+            postp = mods.post('postproc', json=data)
+
+            self.postproc = postp
+            self.save()
 
     def __str__(self):
         return self.name
