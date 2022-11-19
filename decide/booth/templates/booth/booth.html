@@ -16,6 +16,7 @@
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
+                    <span>Registrado como {{user.username}}</span>
                     <b-nav-item href="#" v-on:click="decideLogout">
                         {% trans "logout" %}
                     </b-nav-item>
@@ -48,6 +49,10 @@
                         required />
                 </b-form-group>
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
+                <!--LOGIN CON GITHUB-->
+                <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
+                    <span>Login with GitHub</span>
+                </a>
             </b-form>
 
             <!-- Voting -->
