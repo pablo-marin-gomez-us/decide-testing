@@ -190,6 +190,7 @@ class Voting(models.Model):
         seats = self.seats
         min_percentage_representation = self.min_percentage_representation
 
+        #Si hay 0 escaños por repartir, el procesado de los datos se hace de forma normal
         if seats==0:
             opts = []
             for opt in options:
@@ -208,6 +209,8 @@ class Voting(models.Model):
 
             self.postproc = postp
             self.save()
+        
+        #Si hay escaños por repartir, el procesado de los datos se hace con la ley d'Hont
         else:
             #Hacemos el recuento de votos de todas las opciones
             opts = []
