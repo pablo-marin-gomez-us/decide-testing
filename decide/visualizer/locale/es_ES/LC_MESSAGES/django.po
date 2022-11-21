@@ -36,7 +36,7 @@ msgid "hontDes"
 msgstr "El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos"
 
 msgid "seatsText"
-msgstr "Escaños
+msgstr "Escaños"
 
 msgid "nonstarted"
 msgstr "Votación no comenzada"
