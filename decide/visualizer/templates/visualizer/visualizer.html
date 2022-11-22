@@ -7,6 +7,18 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- semantic UI -->
+    <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+    <!--Chart js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -40,6 +52,46 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </br>
+            <div>
+                <h2 class="heading">Gráfica de la votación:</h2>                
+                <div>
+                    <canvas id="Graph"></canvas>
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                
+                <script>
+                    $(document).ready(function(){
+
+                        const canvas = document.getElementById('Graph');
+                        
+                        let options = []
+                        voting.postproc.forEach(element => options.push(element.option));
+                        let votes = []
+                        voting.postproc.forEach(element => votes.push(element.votes));
+                        
+                        new Chart(canvas, {
+                            type: 'pie',
+                            data: {
+                            labels: options,
+                            datasets: [{
+                                label: '# of Votes',
+                                data: votes,
+                                borderWidth: 1
+                            }]
+                            },
+                            options: {
+                            scales: {
+                                y: {
+                                beginAtZero: true
+                                }
+                            }
+                            }
+                        });
+                    });
+                </script>
             </div>
 
         </div>
