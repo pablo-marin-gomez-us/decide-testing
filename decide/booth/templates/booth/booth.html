@@ -16,7 +16,6 @@
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
-                    <span>Registrado como {{user.username}}</span>
                     <b-nav-item href="#" v-on:click="decideLogout">
                         {% trans "logout" %}
                     </b-nav-item>
@@ -29,6 +28,7 @@
 
         <div class="voting">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+
 
             <!-- Register -->
             <b-form @submit="onSubmitLogin" v-if="signup">
@@ -49,11 +49,21 @@
                         required />
                 </b-form-group>
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
-                <!--LOGIN CON GITHUB-->
-                <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
-                    <span>Login with GitHub</span>
-                </a>
             </b-form>
+            <!--LOGIN CON GITHUB-->
+
+            {% if not user.is_authenticated %}
+            <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
+                <span>Login with GitHub</span>
+            </a>
+            {% else %}
+            <p>Registrado en {{user.social_auth.get.provider}} como {{user}}</p>
+            <p>usuario que va a votar: [[user]]</p>
+            <b-button type="button" variant="primary" v-if="signup" v-on:click="getSocialAuthUser">
+                Vote with {{user.social_auth.get.provider}}
+            </b-button>
+            {% endif %}
+
 
             <!-- Voting -->
             <div v-if="!signup">
@@ -211,6 +221,15 @@
                     this.alertLvl = lvl;
                     this.alertMsg = msg;
                     this.alertShow = true;
+                },
+                getSocialAuthUser() {
+                    this.signup = false;
+                    var un = "{{ user.username }}"; //cuidado, con comillas es texto plano
+                    var pw = "{{ user.password }}";
+                    //esto lo devuelve en hash asi que no vale. Ideas: random password generator
+                    //y setear esa contraseña al usuario, acto seguido logear con dichas credenciales
+                    this.form = {username : un, password : pw}
+                    console.log(this.form)
                 }
             },
         })
