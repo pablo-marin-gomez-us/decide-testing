@@ -30,6 +30,7 @@
             <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
             <h3>{% trans "vName" %}: [[ voting.name ]]</h3>
 
+
             <!-- Register -->
             <b-form @submit="onSubmitLogin" v-if="signup">
                 <b-form-group label="{% trans "Username" %}" label-for="username">
@@ -51,6 +52,19 @@
                 <br>
                     <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
+            <!--LOGIN CON GITHUB-->
+
+            {% if not user.is_authenticated and not user.is_staff %}
+            <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
+                <span>Login with GitHub</span>
+            </a>
+            {% elif not user.is_staff %}
+            <p>Registrado en {{user.social_auth.get.provider}} como {{user}}</p>
+            <b-button type="button" variant="primary" v-if="signup" v-on:click="getSocialAuthUser">
+                Vote with {{user.social_auth.get.provider}}
+            </b-button>
+            {% endif %}
+
 
             <!-- Voting -->
             <div v-if="!signup">
@@ -208,6 +222,22 @@
                     this.alertLvl = lvl;
                     this.alertMsg = msg;
                     this.alertShow = true;
+                },
+                getSocialAuthUser() {
+                    this.signup = false;
+                    var un = "{{ user.username }}";
+                    var pw = "{{ randomPassword }}";
+                    this.form = {username : un, password : pw};
+                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                        .then(data => {
+                            console.log(this.form)
+                            document.cookie = 'decide='+data.token+';';
+                            this.token = data.token;
+                            this.getUser();
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
                 }
             },
         })

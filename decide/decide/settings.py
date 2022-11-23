@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'gateway',
+
+    'social.apps.django_app.default',
+    'social_django',
 ]
 
 REST_FRAMEWORK = {
@@ -58,6 +61,7 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = [
     'base.backends.AuthBackend',
+    'social_core.backends.github.GithubOAuth2',
 ]
 
 MODULES = [
@@ -98,6 +102,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -184,6 +190,11 @@ if os.path.exists("config.jsonnet"):
     config = json.loads(evaluate_file("config.jsonnet"))
     for k, v in config.items():
         vars()[k] = v
+
+#OAUTH
+
+SOCIAL_AUTH_GITHUB_KEY = 'd781104d572cee72044d'
+SOCIAL_AUTH_GITHUB_SECRET = 'fd224f92a08f2fd84062936c082876fc5c901cc2'
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
