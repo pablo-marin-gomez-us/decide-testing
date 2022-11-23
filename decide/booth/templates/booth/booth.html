@@ -52,11 +52,11 @@
             </b-form>
             <!--LOGIN CON GITHUB-->
 
-            {% if not user.is_authenticated %}
+            {% if not user.is_authenticated and not user.is_staff %}
             <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
                 <span>Login with GitHub</span>
             </a>
-            {% else %}
+            {% elif not user.is_staff %}
             <p>Registrado en {{user.social_auth.get.provider}} como {{user}}</p>
             <p>usuario que va a votar: [[user]]</p>
             <b-button type="button" variant="primary" v-if="signup" v-on:click="getSocialAuthUser">
@@ -224,12 +224,19 @@
                 },
                 getSocialAuthUser() {
                     this.signup = false;
-                    var un = "{{ user.username }}"; //cuidado, con comillas es texto plano
-                    var pw = "{{ user.password }}";
-                    //esto lo devuelve en hash asi que no vale. Ideas: random password generator
-                    //y setear esa contraseña al usuario, acto seguido logear con dichas credenciales
-                    this.form = {username : un, password : pw}
-                    console.log(this.form)
+                    var un = "{{ user.username }}";
+                    var pw = "{{ randomPassword }}";
+                    this.form = {username : un, password : pw};
+                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                        .then(data => {
+                            console.log(this.form)
+                            document.cookie = 'decide='+data.token+';';
+                            this.token = data.token;
+                            this.getUser();
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
                 }
             },
         })
