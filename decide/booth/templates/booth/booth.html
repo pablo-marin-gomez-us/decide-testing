@@ -58,7 +58,6 @@
             </a>
             {% elif not user.is_staff %}
             <p>Registrado en {{user.social_auth.get.provider}} como {{user}}</p>
-            <p>usuario que va a votar: [[user]]</p>
             <b-button type="button" variant="primary" v-if="signup" v-on:click="getSocialAuthUser">
                 Vote with {{user.social_auth.get.provider}}
             </b-button>
