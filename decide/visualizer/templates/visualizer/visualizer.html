@@ -55,43 +55,12 @@
             </div>
         </br>
             <div>
-                <h2 class="heading">Gráfica de la votación:</h2>                
-                <div>
+                <h2 class="heading">Gráfica de la votación:</h2>  
+
+                <div class="chart-container" style="position: relative; height:40vh; width:80vw">
                     <canvas id="Graph"></canvas>
-                </div>
-
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                
-                <script>
-                    $(document).ready(function(){
-
-                        const canvas = document.getElementById('Graph');
-                        
-                        let options = []
-                        voting.postproc.forEach(element => options.push(element.option));
-                        let votes = []
-                        voting.postproc.forEach(element => votes.push(element.votes));
-                        
-                        new Chart(canvas, {
-                            type: 'pie',
-                            data: {
-                            labels: options,
-                            datasets: [{
-                                label: '# of Votes',
-                                data: votes,
-                                borderWidth: 1
-                            }]
-                            },
-                            options: {
-                            scales: {
-                                y: {
-                                beginAtZero: true
-                                }
-                            }
-                            }
-                        });
-                    });
-                </script>
+                </div>     
+                           
             </div>
 
         </div>
@@ -103,6 +72,7 @@
     <script src="https://unpkg.com/vue@2.7.10"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         var voting = {{voting|safe}};
@@ -113,6 +83,37 @@
                 voting: voting
             }
         })
+    </script>
+                
+    <script>
+        $(document).ready(function(){
+
+            const canvas = document.getElementById('Graph');
+            
+            let options = []
+            voting.postproc.forEach(element => options.push(element.option));
+            let votes = []
+            voting.postproc.forEach(element => votes.push(element.votes));
+            
+            new Chart(canvas, {
+                type: 'pie',
+                data: {
+                labels: options,
+                datasets: [{
+                    label: '# of Votes',
+                    data: votes,
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                scales: {
+                    y: {
+                    beginAtZero: true
+                    }
+                }                            
+                }
+            });
+        });
     </script>
 </body>
 {% endblock %}
