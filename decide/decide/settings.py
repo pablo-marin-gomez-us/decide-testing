@@ -62,24 +62,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning',
-    'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
 }
 
 #Now user will login with email, instead of username
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED =True
-ACCOUNT_USERNAME_REQUIRED = False
+AUTH_AUTHENTICATION_TYPE = 'both'
 
 AUTHENTICATION_BACKENDS = [
-    'base.backends.AuthBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'authentication.backends.EmailOrUsernameModelBackend'
 ]
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MODULES = [
     'authentication',
