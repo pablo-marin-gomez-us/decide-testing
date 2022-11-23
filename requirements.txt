@@ -13,3 +13,4 @@ selenium
 click
 locust
 python-social-auth
+social-auth-app-django
