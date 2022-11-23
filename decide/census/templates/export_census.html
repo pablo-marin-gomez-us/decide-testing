@@ -13,23 +13,24 @@
      <div class="container mt-5">
           <div class="row justify-content-center">
                <div class="col-md-8">
-                    <h2>{{voting.name}} - {{voting.desc}}</h2>
+                    <h1>{% trans "vName" %}: [[ voting.name ]] </h1>
+                    <h3>{% trans "vDesc" %}: [[ voting.desc ]]</h3>
                     <div class="row mt-5 mb-5">
                          <div class="col-md-8">
-                              <h3>Census:</h3>
+                              <h3>{% trans "census" %}</h3>
                          </div>
                          <div class="col-md-4">
-                              <button type="button" onclick="download(filename='census.csv')">Download as CSV</button>
+                              <button type="button" onclick="download(filename='census.csv')">{% trans "download_csv" %}</button>
                          </div>
                     </div>
                     <table class="table">
                          <thead>
                               <tr>
                                    <th scope="col">#</th>
-                                   <th scope="col">Username</th>
-                                   <th scope="col">First name</th>
-                                   <th scope="col">Last name</th>
-                                   <th scope="col">Voter Id</th>
+                                   <th scope="col">{% trans "username" %}</th>
+                                   <th scope="col">{% trans "first_name" %}</th>
+                                   <th scope="col">{% trans "last_name" %}</th>
+                                   <th scope="col">{% trans "voter_id" %}</th>
                               </tr>
                          </thead>
                          <tbody>
