@@ -69,7 +69,8 @@ REST_FRAMEWORK = {
 AUTH_AUTHENTICATION_TYPE = 'both'
 
 AUTHENTICATION_BACKENDS = [
-    'authentication.backends.EmailOrUsernameModelBackend'
+    'authentication.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MODULES = [
@@ -90,7 +91,7 @@ EMAIL_FROM = 'decidetrabuco@gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
-EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo'
+EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo' #Arreglar en la versión final #os.getenv('PASSWORD') también puede hacerse en un archivo aparte
 PASSWORD_RESET_TIMEOUT = 14400
 
 BASEURL = 'http://localhost:8000'
@@ -172,7 +173,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 

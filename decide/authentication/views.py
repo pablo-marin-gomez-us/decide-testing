@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED,
         HTTP_400_BAD_REQUEST,
-        HTTP_401_UNAUTHORIZED
 )
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -12,7 +11,6 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
-from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
@@ -47,12 +45,9 @@ def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except:
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
-    print(uidb64)
-    print(urlsafe_base64_decode(uidb64).decode())
-    print(user)
-    
+
     if user is not None and account_activation_token.check_token(user, token):
         print('Hola')
         user.is_active = True
@@ -87,8 +82,6 @@ class RegisterView(APIView, TemplateView):
     template_name = 'authentication/register.html'
 
     def post(self, request):
-        key = request.data.get('token', '')
-
         username = request.data.get('username', '')
         pwd = request.data.get('password', '')
         email = request.data.get('email','')
@@ -100,7 +93,7 @@ class RegisterView(APIView, TemplateView):
             user.set_password(pwd)
             user.email = email
             user.is_active = False
-            user.save() 
+            user.save()
             token, _ = Token.objects.get_or_create(user=user)
             activateEmail(request,user,email)
         except IntegrityError:
