@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n static %}
+{% load static %}
 
 {% block extrahead %}
     <link type="text/css" rel="stylesheet"
@@ -7,6 +8,18 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- semantic UI -->
+    <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+    <!--Chart js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -42,6 +55,22 @@
                     </tbody>
                 </table>
             </div>
+        </br>
+            <div>
+                <h2 class="heading">Gráficas de la votación:</h2>  
+
+                <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                     
+                        <h5>Grafica 1</h5> 
+                        <canvas id="Graph1"></canvas>
+                        <h5>Grafica 2</h5> 
+                        <canvas id="Graph2"></canvas>
+                        <h5>Grafica 3</h5> 
+                        <canvas id="Graph3"></canvas>
+                    
+                </div>     
+                           
+            </div>
 
         </div>
     </div>
@@ -52,6 +81,7 @@
     <script src="https://unpkg.com/vue@2.7.10"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         var voting = {{voting|safe}};
@@ -62,6 +92,7 @@
                 voting: voting
             }
         })
-    </script>
+    </script> 
+    <script src="{% static 'graph.js' %}"></script>
 </body>
 {% endblock %}
