@@ -7,16 +7,12 @@ from rest_framework.status import (
         HTTP_204_NO_CONTENT as ST_204,
         HTTP_400_BAD_REQUEST as ST_400,
         HTTP_401_UNAUTHORIZED as ST_401,
-        HTTP_409_CONFLICT as ST_409,
-        HTTP_400_BAD_REQUEST
+        HTTP_409_CONFLICT as ST_409
 )
 from rest_framework.views import APIView
 from base.perms import UserIsStaff
 from .models import Census
 from django.views.generic import TemplateView
-from django.http import Http404
-from base import mods
-import json
 import csv
 import requests
 
@@ -38,7 +34,6 @@ class CensusCreate(generics.ListCreateAPIView):
         voting_id = request.GET.get('voting_id')
         voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
         return Response({'voters': voters})
-
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
@@ -69,11 +64,11 @@ class CensusView(APIView,TemplateView):
         password = request.data.get('password', '')
 
         if not votation or not user or not password:
-            return Response({'Any empty inputs?'}, status=HTTP_400_BAD_REQUEST)
+            return Response({'Any empty inputs?'}, status=ST_400)
         
         def decode_utf8(input_iterator):
-            for l in input_iterator:
-                yield l.decode('utf-8')
+            for line in input_iterator:
+                yield line.decode('utf-8')
 
         def create_voters_csv(request):
             HOST = 'http://localhost:8000'
