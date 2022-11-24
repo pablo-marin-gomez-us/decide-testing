@@ -62,7 +62,6 @@ class CensusView(APIView,TemplateView):
         votation = request.data.get('votation', '')
         user = request.data.get('user', '')
         password = request.data.get('password', '')
-
         if not votation or not user or not password:
             return Response({'Any empty inputs?'}, status=ST_400)
 
@@ -84,10 +83,9 @@ class CensusView(APIView,TemplateView):
                 else:
                     invalid_voters.append(username)
             return voters_pk,invalid_voters
-                
+
         data = {'username': user, 'password': password}
         response = requests.post(HOST + '/authentication/login/', data=data)
-        
         token = response.json()
         if not token.get('token') :
             return Response({'This user is incorrect, try again'}, status=ST_401)
@@ -97,10 +95,6 @@ class CensusView(APIView,TemplateView):
         voters_pk,invalid_voters = create_voters_csv(request)
 
         def add_census(voters_pk, voting_pk):
-            """
-            Add to census all voters_pk in the voting_pk.
-            """
-
             data = {'username': user, 'password': password}
             response = requests.post(HOST + '/authentication/login/', data=data)
             token = response.json()
@@ -111,5 +105,3 @@ class CensusView(APIView,TemplateView):
 
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
-
-    
