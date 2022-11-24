@@ -65,7 +65,7 @@ class CensusView(APIView,TemplateView):
 
         if not votation or not user or not password:
             return Response({'Any empty inputs?'}, status=ST_400)
-        
+
         def decode_utf8(input_iterator):
             for line in input_iterator:
                 yield line.decode('utf-8')
