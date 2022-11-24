@@ -7,12 +7,18 @@ from rest_framework.status import (
         HTTP_204_NO_CONTENT as ST_204,
         HTTP_400_BAD_REQUEST as ST_400,
         HTTP_401_UNAUTHORIZED as ST_401,
-        HTTP_409_CONFLICT as ST_409
+        HTTP_409_CONFLICT as ST_409,
+        HTTP_400_BAD_REQUEST
 )
-
+from rest_framework.views import APIView
 from base.perms import UserIsStaff
 from .models import Census
-
+from django.views.generic import TemplateView
+from django.http import Http404
+from base import mods
+import json
+import csv
+import requests
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -49,3 +55,66 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+    
+class CensusView(APIView,TemplateView):
+    template_name = 'census/census.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return (context)
+
+    def post(self,request):
+        HOST = 'http://localhost:8000'
+        votation = request.data.get('votation', '')
+        user = request.data.get('user', '')
+        password = request.data.get('password', '')
+
+        if not votation or not user or not password:
+            return Response({'Any empty inputs?'}, status=HTTP_400_BAD_REQUEST)
+        
+        def decode_utf8(input_iterator):
+            for l in input_iterator:
+                yield l.decode('utf-8')
+
+        def create_voters_csv(request):
+            HOST = 'http://localhost:8000'
+            reader = csv.DictReader(decode_utf8(request.FILES['file']))
+            for row in reader:
+                aux_list = list(row.values())
+                username = aux_list[0]
+                pwd = aux_list[1]
+                token.update({'username': username, 'password': pwd})
+                response = requests.post(HOST + '/authentication/register/', data=token)
+                if response.status_code == 201:
+                    voters_pk.append(response.json().get('user_pk'))
+                else:
+                    invalid_voters.append(username)
+            return voters_pk,invalid_voters
+                
+        data = {'username': user, 'password': password}
+        response = requests.post(HOST + '/authentication/login/', data=data)
+        
+        token = response.json()
+        if not token.get('token') :
+            return Response({'This user is incorrect, try again'}, status=ST_401)
+
+        voters_pk = []
+        invalid_voters = []
+        voters_pk,invalid_voters = create_voters_csv(request)
+
+        def add_census(voters_pk, voting_pk):
+            """
+            Add to census all voters_pk in the voting_pk.
+            """
+
+            data = {'username': user, 'password': password}
+            response = requests.post(HOST + '/authentication/login/', data=data)
+            token = response.json()
+
+            data2 = {'voters': voters_pk, 'voting_id': voting_pk}
+            auth = {'Authorization': 'Token ' + token.get('token')}
+            response = requests.post(HOST + '/census/', json=data2, headers=auth)
+
+        add_census(voters_pk, votation)        
+        return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
+
+    
