@@ -93,7 +93,7 @@ class AuthTestCase(APITestCase):
 
         token.update({'username': 'user1'})
         response = self.client.post('/authentication/register/', token, format='json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
 
     def test_register_bad_request(self):
         data = {'username': 'admin', 'password': 'admin'}
