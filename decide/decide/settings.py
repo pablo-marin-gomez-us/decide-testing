@@ -84,6 +84,15 @@ MODULES = [
     'voting',
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_FROM = 'decidetrabuco@gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
+EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo'
+PASSWORD_RESET_TIMEOUT = 14400
+
 BASEURL = 'http://localhost:8000'
 
 MIDDLEWARE = [
