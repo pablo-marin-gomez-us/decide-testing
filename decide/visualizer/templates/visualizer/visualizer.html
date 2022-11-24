@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n static %}
+{% load static %}
 
 {% block extrahead %}
     <link type="text/css" rel="stylesheet"
@@ -55,10 +56,17 @@
             </div>
         </br>
             <div>
-                <h2 class="heading">Gráfica de la votación:</h2>  
+                <h2 class="heading">Gráficas de la votación:</h2>  
 
                 <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-                    <canvas id="Graph"></canvas>
+                     
+                        <h5>Grafica 1</h5> 
+                        <canvas id="Graph1"></canvas>
+                        <h5>Grafica 2</h5> 
+                        <canvas id="Graph2"></canvas>
+                        <h5>Grafica 3</h5> 
+                        <canvas id="Graph3"></canvas>
+                    
                 </div>     
                            
             </div>
@@ -83,37 +91,7 @@
                 voting: voting
             }
         })
-    </script>
-                
-    <script>
-        $(document).ready(function(){
-
-            const canvas = document.getElementById('Graph');
-            
-            let options = []
-            voting.postproc.forEach(element => options.push(element.option));
-            let votes = []
-            voting.postproc.forEach(element => votes.push(element.votes));
-            
-            new Chart(canvas, {
-                type: 'pie',
-                data: {
-                labels: options,
-                datasets: [{
-                    label: '# of Votes',
-                    data: votes,
-                    borderWidth: 1
-                }]
-                },
-                options: {
-                scales: {
-                    y: {
-                    beginAtZero: true
-                    }
-                }                            
-                }
-            });
-        });
-    </script>
+    </script> 
+    <script src="{% static 'graph.js' %}"></script>
 </body>
 {% endblock %}
