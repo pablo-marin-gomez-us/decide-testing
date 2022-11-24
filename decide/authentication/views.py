@@ -58,7 +58,7 @@ def activate(request, uidb64, token):
     else:
         print('Fallo')
         messages.error(request, 'Activation link is invalid!')
-    
+
     return redirect('http://localhost:8000/authentication/register/')
 
 def activateEmail(request, user, to_email):
