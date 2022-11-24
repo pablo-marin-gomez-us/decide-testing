@@ -50,7 +50,7 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
-    
+
 class CensusView(APIView,TemplateView):
     template_name = 'census/census.html'
     def get_context_data(self, **kwargs):
@@ -109,7 +109,7 @@ class CensusView(APIView,TemplateView):
             auth = {'Authorization': 'Token ' + token.get('token')}
             response = requests.post(HOST + '/census/', json=data2, headers=auth)
 
-        add_census(voters_pk, votation)        
+        add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
 
     
