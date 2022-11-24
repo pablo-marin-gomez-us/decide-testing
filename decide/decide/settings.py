@@ -37,14 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
-
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
-    'rest_auth',
-    'rest_auth.registration',
 
     'corsheaders',
     'django_filters',
@@ -53,8 +45,6 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'gateway',
 ]
-
-SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
