@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% load index %}
+
+{% block extrahead %}
+     <link type="text/css" rel="stylesheet"
+          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+     <link type="text/css" rel="stylesheet"
+          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+{% endblock %}
+
+{% block content %}
+     <div class="container mt-5">
+          <div class="row justify-content-center">
+               <div class="col-md-8">
+                    <h1>{% trans "vName" %}: {{voting.name}} </h1>
+                    <h3>{% trans "vDesc" %}: {{ voting.desc }}</h3>
+                    <div class="row mt-5 mb-5">
+                         <div class="col-md-8">
+                              <h3>{% trans "census" %}</h3>
+                         </div>
+                         <div class="col-md-4">
+                              <button type="button" onclick="download(filename='census.csv')">{% trans "download_csv" %}</button>
+                         </div>
+                    </div>
+                    <table class="table">
+                         <thead>
+                              <tr>
+                                   <th scope="col">#</th>
+                                   <th scope="col">{% trans "username" %}</th>
+                                   <th scope="col">{% trans "first_name" %}</th>
+                                   <th scope="col">{% trans "last_name" %}</th>
+                                   <th scope="col">{% trans "voter_id" %}</th>
+                              </tr>
+                         </thead>
+                         <tbody>
+                              {% for i in index %}
+                              <tr>
+                                   <th scope="row">{{i}}</th>
+                                   {% with census|index:i as c%}
+                                        {% with voters|index:i as voter%}
+                                             <td>{{voter.username}}</td>
+                                             {% if voter.first_name%}
+                                                  <td>{{voter.first_name}}</td>
+                                             {% else %}
+                                                  <td>-</td>
+                                             {% endif %}
+                                             {% if voter.first_name%}
+                                                  <td>{{voter.last_name}}</td>
+                                             {% else %}
+                                                  <td>-</td>
+                                             {% endif %}
+                                        {% endwith %}
+                                        <td>{{c.voter_id}}</td>
+                                   {% endwith %}
+                              </tr>
+                              {% endfor %}
+                         </tbody>
+                    </table>
+               </div>
+          </div>
+     </div>
+
+     <script type="text/javascript">
+          function download(filename) {
+               //text = '1,diego,r,u\n2,lucas,r,u\n';
+               var census_text = getCensusText();
+               console.log(census_text);
+               CSVFile = new Blob([census_text], {type:"text/csv;charset=utf-8", encoding:"UTF-8"});
+
+               var temp_link = document.createElement("a");
+
+               temp_link.download = filename;
+               var url = window.URL.createObjectURL(CSVFile);
+               temp_link.href = url;
+
+               temp_link.style.display = "none";
+               document.body.appendChild(temp_link);
+
+               temp_link.click();
+               document.body.removeChild(temp_link);
+          }
+
+          function getCensusText() {
+               var text = '{{census_text}}';
+
+               var find = '/';
+               var re = new RegExp(find, 'g');
+
+               var census_text = text.replace(re, '\n');
+
+               return census_text;
+          }
+     </script>
+
+{% endblock %}
