@@ -14,6 +14,12 @@
           <div class="row justify-content-center">
                <div class="col-md-8">
                     <h2>{{voting.name}} - {{voting.desc}}</h2>
+                    <form id="formulario" method="post" action=''>{% csrf_token %}
+                         <fieldset>
+                               {{formulario}}
+                              <input type='submit' value='Realizar Busqueda'/>
+                         </fieldset>
+                    </form>
                     <div class="row mt-5 mb-5">
                          <div class="col-md-8">
                               <h3>Census:</h3>
@@ -62,7 +68,6 @@
 
      <script type="text/javascript">
           function download(filename) {
-               //text = '1,diego,r,u\n2,lucas,r,u\n';
                var census_text = getCensusText();
                console.log(census_text);
                CSVFile = new Blob([census_text], {type:"text/csv;charset=utf-8", encoding:"UTF-8"});
