@@ -17,6 +17,7 @@ from base.perms import UserIsStaff
 from .models import Census
 from .forms import AtributosUser
 from voting.models import Voting
+from census import census_utils as Utils
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -68,17 +69,10 @@ def export_census(request, voting_id):
         if formulario.is_valid():
             voting = Voting.objects.filter(id=voting_id).values()[0]
             census = Census.objects.filter(voting_id=voting_id).values()
-            voters = []
-            index_list = []
-            index = 0
-            census_text = 'ID,Username,Firstname,Lastname/'
-            
-            for c in census:
-                index_list.append(index)
-                index += 1
-                voter = User.objects.filter(id=c['voter_id']).values()[0]
-                voters.append(voter)
-                census_text += str(c['voter_id']) + ',' + voter['username'] + ',' + voter['first_name'] + ',' + voter['last_name'] + '/'
+            index_list = [i for i in range(0,len(census))]
+            data = Utils.get_csvtext_and_voters(formulario.cleaned_data['user_atributes'], census)
+            census_text = data[0]
+            voters = data[1]
 
     context = {
         'formulario':formulario,
