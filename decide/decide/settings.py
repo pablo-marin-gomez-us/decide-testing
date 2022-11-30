@@ -64,9 +64,9 @@ REST_FRAMEWORK = {
 AUTH_AUTHENTICATION_TYPE = 'both'
 
 AUTHENTICATION_BACKENDS = [
+    'base.backends.AuthBackend',
     'authentication.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'base.backends.AuthBackend',
     'social_core.backends.github.GithubOAuth2',
 ]
 

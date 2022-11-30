@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 import csv
 import requests
 from voting.models import Voting
+from  django.contrib.admin.views.decorators import staff_member_required
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -110,6 +111,8 @@ class CensusView(APIView,TemplateView):
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
         
+    
+@staff_member_required(login_url='/admin/login')
 def export_census(request, voting_id):
     template = loader.get_template('export_census.html')
     voting = Voting.objects.filter(id=voting_id).values()[0]
