@@ -13,32 +13,38 @@ def get_user_atributes():
 
     return atributes_list
 
-def get_csvtext_and_voters(form_values, census):
+# csvtext -> Header1,Header2,Headder3/value1,value2,value3/value1,value2,value3/
+def get_csvtext_and_data(form_values, census):
     atributes_list = get_user_atributes()
-    selected_atributes = []
-    voters = []
+    voters_data = []
+    headers = []
     
     # Header
-    census_text = 'ID,'
+    census_text = 'id,'
+    headers.append('id')
     for index in form_values:
-        census_text += str(atributes_list[int(index)][1])
-        selected_atributes.append(str(atributes_list[int(index)][1]))
+        atribute = str(atributes_list[int(index)][1])
+        headers.append(atribute)
+        census_text += atribute
         if not form_values[-1] == index:
             census_text += ','
         else:
             census_text += '/'
+    
 
     # CSV values
     for c in census:
         voter = User.objects.filter(id=c['voter_id']).values()[0]
-        voters.append(voter)
-        census_text += str(c['voter_id']) + ','
-        for atr in selected_atributes:
+        values_list = []
+        for atr in headers:
             census_text += str(voter[atr])
-            if not selected_atributes[-1] == atr:
+            values_list.append(str(voter[atr]))
+            if not headers[-1] == atr:
                 census_text += ','
             else:
                 census_text += '/'
+        voters_data.append(values_list)
 
-    return (census_text, voters)
+    return (census_text, headers, voters_data)
+
 

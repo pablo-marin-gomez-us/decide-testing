@@ -58,29 +58,28 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 def export_census(request, voting_id):
     template = loader.get_template('export_census.html')
     formulario = AtributosUser()
-    voting = None
-    census = []
+    voting = Voting.objects.filter(id=voting_id).values()[0]
     census_text = ''
-    voters = []
-    index_list = []
+    headers = []
+    voters_data = []
 
     if request.method == 'POST':
         formulario = AtributosUser(request.POST)
         if formulario.is_valid():
-            voting = Voting.objects.filter(id=voting_id).values()[0]
             census = Census.objects.filter(voting_id=voting_id).values()
-            index_list = [i for i in range(0,len(census))]
-            data = Utils.get_csvtext_and_voters(formulario.cleaned_data['user_atributes'], census)
+            data = Utils.get_csvtext_and_data(formulario.cleaned_data['user_atributes'], census)
             census_text = data[0]
-            voters = data[1]
+            headers = data[1]
+            voters_data = data[2]
 
     context = {
         'formulario':formulario,
         'voting':voting,
-        'census':census,
         'census_text':census_text,
-        'voters':voters,
-        'index':index_list,
+        'voters_data':voters_data,
+        'index':[i for i in range(0,len(voters_data))],
+        'headers':headers,
+        'header_index':[i for i in range(0,len(headers))],
     }
 
     return HttpResponse(template.render(context, request))

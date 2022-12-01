@@ -18,7 +18,7 @@
                     <form id="formulario" method="post" action=''>{% csrf_token %}
                          <fieldset>
                                {{formulario}}
-                              <input type='submit' value='Realizar Busqueda'/>
+                              <input type='submit' value='Generar censo'/>
                          </fieldset>
                     </form>
                     <div class="row mt-5 mb-5">
@@ -29,41 +29,33 @@
                               <button type="button" onclick="download(filename='census.csv')">Download as CSV</button>
                          </div>
                     </div>
-                    <table class="table">
-                         <thead>
-                              <tr>
-                                   <th scope="col">#</th>
-                                   <th scope="col">Username</th>
-                                   <th scope="col">First name</th>
-                                   <th scope="col">Last name</th>
-                                   <th scope="col">Voter Id</th>
-                              </tr>
-                         </thead>
-                         <tbody>
-                              {% for i in index %}
-                              <tr>
-                                   <th scope="row">{{i}}</th>
-                                   {% with census|index:i as c%}
-                                        {% with voters|index:i as voter%}
-                                             <td>{{voter.username}}</td>
-                                             {% if voter.first_name%}
-                                                  <td>{{voter.first_name}}</td>
-                                             {% else %}
+               </div>
+               <table class="table">
+                    <thead>
+                         <tr>
+                              {% for header in headers %}
+                                   <th scope="col">{{header}}</th>
+                              {% endfor %}
+                         </tr>
+                    </thead>
+                    <tbody>
+                         {% for i in index %}
+                         <tr>
+                              {% with voters_data|index:i as voter_data %}
+                                   {% for j in header_index %}
+                                        {% with voter_data|index:j as data %}
+                                             {% if data == '' %}
                                                   <td>-</td>
-                                             {% endif %}
-                                             {% if voter.first_name%}
-                                                  <td>{{voter.last_name}}</td>
                                              {% else %}
-                                                  <td>-</td>
+                                                  <td>{{data}}</td>
                                              {% endif %}
                                         {% endwith %}
-                                        <td>{{c.voter_id}}</td>
-                                   {% endwith %}
-                              </tr>
-                              {% endfor %}
-                         </tbody>
-                    </table>
-               </div>
+                                   {% endfor %}
+                              {% endwith %}
+                         </tr>
+                         {% endfor %}
+                    </tbody>
+               </table>
           </div>
      </div>
 
