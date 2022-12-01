@@ -1,7 +1,7 @@
 {% autoescape off %}
-Hi {{ user.username }},
+{% trans "saludo" %}: {{ user.username }},
 
-Please click on the link below to confirm your registration:
+{% trans "botonRegistrar" %}:
 
 {{protocol}}://{{domain}}{% url 'activate' uidb64=uid token=token %}
 {% endautoescape %}
