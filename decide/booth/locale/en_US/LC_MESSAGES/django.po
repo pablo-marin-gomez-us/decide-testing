@@ -1,0 +1,45 @@
+# decide booth translation
+# This file is distributed under the same license as the main project
+
+# Translators: Francisco Javier Migueles <framigdom@alum.us.es>, 2022
+
+msgid ""
+msgstr ""
+
+"Language: es\n"
+"Last-Translator: Francisco Javier Migueles\n"
+"POT-Creation-Date: 2022-11-19 16:00+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "decide"
+msgstr "Decide"
+
+msgid "logout"
+msgstr "Leave"
+
+msgid "vID"
+msgstr "ID de la votación"
+
+msgid "vName"
+msgstr "Name of voting"
+
+msgid "Login"
+msgstr "Identificarse"
+
+msgid "LoginGitHub"
+msgstr "Identificarse con GitHub"
+
+msgid "LoginFacebook"
+msgstr "Identificarse con Facebook"
+
+msgid "Vote"
+msgstr "Votar"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Conglatulations. Your vote has been sent"
+msgstr "¡Enhorabuena! Tu voto se ha enviado"
