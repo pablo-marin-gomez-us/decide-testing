@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,6 +27,7 @@ SECRET_KEY = '^##ydkswfu0+=ofw0l#$kv^8n)0$i(qd&d&ol#p9!b$8*5%j1+'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -44,6 +46,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'gateway',
+
+    'social.apps.django_app.default',
+    'social_django',
 ]
 
 REST_FRAMEWORK = {
@@ -51,11 +56,18 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning'
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning',
 }
 
+#Now user will login with email, instead of username
+
+AUTH_AUTHENTICATION_TYPE = 'both'
+
 AUTHENTICATION_BACKENDS = [
+    'authentication.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
     'base.backends.AuthBackend',
+    'social_core.backends.github.GithubOAuth2',
 ]
 
 MODULES = [
@@ -69,6 +81,15 @@ MODULES = [
     'visualizer',
     'voting',
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_FROM = 'decidetrabuco@gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
+EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo' #Arreglar en la versión final #os.getenv('PASSWORD') también puede hacerse en un archivo aparte
+PASSWORD_RESET_TIMEOUT = 14400
 
 BASEURL = 'http://localhost:8000'
 
@@ -91,10 +112,13 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.i18n',  
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -140,7 +164,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es_ES'
+
+LANGUAGES = (
+    ('es', _('Spanish')),
+)
 
 TIME_ZONE = 'UTC'
 
@@ -149,7 +177,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -177,6 +204,11 @@ if os.path.exists("config.jsonnet"):
     config = json.loads(evaluate_file("config.jsonnet"))
     for k, v in config.items():
         vars()[k] = v
+
+#OAUTH
+
+SOCIAL_AUTH_GITHUB_KEY = 'd781104d572cee72044d'
+SOCIAL_AUTH_GITHUB_SECRET = 'fd224f92a08f2fd84062936c082876fc5c901cc2'
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
