@@ -59,4 +59,24 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         sub_title = sub_title.split(": ")[0]      
         return self.assertEqual(str(sub_title),'Nombre de la votación')
 
+    def testCheckInputsTransES(self):
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        inputs = [element.text for element in self.driver.find_elements(By.TAG_NAME, 'label')]
+        
+        username, password = inputs[0], inputs[1]
+        local_check = self.assertEqual(username,"Nombre de usuario")  
+        local_check = local_check and self.assertEqual(password,"Contraseña") 
+        return local_check
+    
+    def testCheckLoginTransES(self):
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        login = self.driver.find_element(By.TAG_NAME, 'button').text
+
+        return self.assertEqual(login,"Identificarse")
+
+    def testCheckGitHubTransES(self):
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
+
+        return self.assertEqual(login,"Login with GitHub")  
         
