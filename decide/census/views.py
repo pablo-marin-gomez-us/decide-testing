@@ -1,5 +1,8 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import loader
+from django.http import HttpResponse
+from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -9,10 +12,13 @@ from rest_framework.status import (
         HTTP_401_UNAUTHORIZED as ST_401,
         HTTP_409_CONFLICT as ST_409
 )
-
+from rest_framework.views import APIView
 from base.perms import UserIsStaff
 from .models import Census
-
+from django.views.generic import TemplateView
+import csv
+import requests
+from voting.models import Voting
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -33,7 +39,6 @@ class CensusCreate(generics.ListCreateAPIView):
         voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
         return Response({'voters': voters})
 
-
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
     def destroy(self, request, voting_id, *args, **kwargs):
@@ -49,3 +54,83 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+class CensusView(APIView,TemplateView):
+    template_name = 'census/census.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return (context)
+
+    def post(self,request):
+        HOST = 'http://localhost:8000'
+        votation = request.data.get('votation', '')
+        user = request.data.get('user', '')
+        password = request.data.get('password', '')
+        if not votation or not user or not password:
+            return Response({'Any empty inputs?'}, status=ST_400)
+
+        def decode_utf8(input_iterator):
+            for line in input_iterator:
+                yield line.decode('utf-8')
+
+        def create_voters_csv(request):
+            HOST = 'http://localhost:8000'
+            reader = csv.DictReader(decode_utf8(request.FILES['file']))
+            for row in reader:
+                aux_list = list(row.values())
+                username = aux_list[0]
+                pwd = aux_list[1]
+                token.update({'username': username, 'password': pwd})
+                response = requests.post(HOST + '/authentication/register/', data=token)
+                if response.status_code == 201:
+                    voters_pk.append(response.json().get('user_pk'))
+                else:
+                    invalid_voters.append(username)
+            return voters_pk,invalid_voters
+
+        data = {'username': user, 'password': password}
+        response = requests.post(HOST + '/authentication/login/', data=data)
+        token = response.json()
+        if not token.get('token') :
+            return Response({'This user is incorrect, try again'}, status=ST_401)
+
+        voters_pk = []
+        invalid_voters = []
+        voters_pk,invalid_voters = create_voters_csv(request)
+
+        def add_census(voters_pk, voting_pk):
+            data = {'username': user, 'password': password}
+            response = requests.post(HOST + '/authentication/login/', data=data)
+            token = response.json()
+
+            data2 = {'voters': voters_pk, 'voting_id': voting_pk}
+            auth = {'Authorization': 'Token ' + token.get('token')}
+            response = requests.post(HOST + '/census/', json=data2, headers=auth)
+
+        add_census(voters_pk, votation)
+        return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
+        
+def export_census(request, voting_id):
+    template = loader.get_template('export_census.html')
+    voting = Voting.objects.filter(id=voting_id).values()[0]
+    census = Census.objects.filter(voting_id=voting_id).values()
+    voters = []
+    index_list = []
+    index = 0
+    census_text = 'ID,Username,Firstname,Lastname/'
+    
+    for c in census:
+        index_list.append(index)
+        index += 1
+        voter = User.objects.filter(id=c['voter_id']).values()[0]
+        voters.append(voter)
+        census_text += str(c['voter_id']) + ',' + voter['username'] + ',' + voter['first_name'] + ',' + voter['last_name'] + '/'
+
+    context = {
+        'voting':voting,
+        'census':census,
+        'census_text':census_text,
+        'voters':voters,
+        'index':index_list,
+    }
+    return HttpResponse(template.render(context, request))

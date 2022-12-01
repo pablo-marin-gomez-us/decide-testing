@@ -14,7 +14,7 @@
     <div id="app-booth">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <b-navbar-brand tag="h1">{% trans "decide" %}</b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
                     <b-nav-item href="#" v-on:click="decideLogout">
                         {% trans "logout" %}
@@ -27,7 +27,9 @@
         </b-alert>
 
         <div class="voting">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
+            <h3>{% trans "vName" %}: [[ voting.name ]]</h3>
+
 
             <!-- Register -->
             <b-form @submit="onSubmitLogin" v-if="signup">
@@ -47,8 +49,22 @@
                         v-model="form.password"
                         required />
                 </b-form-group>
-                <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
+                <br>
+                    <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
+            <!--LOGIN CON GITHUB-->
+
+            {% if not user.is_authenticated and not user.is_staff %}
+            <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
+                <span>Login with GitHub</span>
+            </a>
+            {% elif not user.is_staff %}
+            <p>Registrado en {{user.social_auth.get.provider}} como {{user}}</p>
+            <b-button type="button" variant="primary" v-if="signup" v-on:click="getSocialAuthUser">
+                Vote with {{user.social_auth.get.provider}}
+            </b-button>
+            {% endif %}
+
 
             <!-- Voting -->
             <div v-if="!signup">
@@ -206,6 +222,22 @@
                     this.alertLvl = lvl;
                     this.alertMsg = msg;
                     this.alertShow = true;
+                },
+                getSocialAuthUser() {
+                    this.signup = false;
+                    var un = "{{ user.username }}";
+                    var pw = "{{ randomPassword }}";
+                    this.form = {username : un, password : pw};
+                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                        .then(data => {
+                            console.log(this.form)
+                            document.cookie = 'decide='+data.token+';';
+                            this.token = data.token;
+                            this.getUser();
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
                 }
             },
         })
