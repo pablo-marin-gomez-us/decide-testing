@@ -52,3 +52,11 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         title = title.split(": ")[0]
         print("'"+ title + "'")     
         return self.assertEqual(str(title),'ID de la votación')
+
+    def testCheckNombreTransES(self):
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        sub_title = self.driver.find_element(By.TAG_NAME, 'h3').text
+        sub_title = sub_title.split(": ")[0]      
+        return self.assertEqual(str(sub_title),'Nombre de la votación')
+
+        
