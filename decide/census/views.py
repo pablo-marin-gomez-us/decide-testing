@@ -1,5 +1,8 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import loader
+from django.http import HttpResponse
+from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -15,6 +18,7 @@ from .models import Census
 from django.views.generic import TemplateView
 import csv
 import requests
+from voting.models import Voting
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -105,3 +109,28 @@ class CensusView(APIView,TemplateView):
 
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
+        
+def export_census(request, voting_id):
+    template = loader.get_template('export_census.html')
+    voting = Voting.objects.filter(id=voting_id).values()[0]
+    census = Census.objects.filter(voting_id=voting_id).values()
+    voters = []
+    index_list = []
+    index = 0
+    census_text = 'ID,Username,Firstname,Lastname/'
+    
+    for c in census:
+        index_list.append(index)
+        index += 1
+        voter = User.objects.filter(id=c['voter_id']).values()[0]
+        voters.append(voter)
+        census_text += str(c['voter_id']) + ',' + voter['username'] + ',' + voter['first_name'] + ',' + voter['last_name'] + '/'
+
+    context = {
+        'voting':voting,
+        'census':census,
+        'census_text':census_text,
+        'voters':voters,
+        'index':index_list,
+    }
+    return HttpResponse(template.render(context, request))
