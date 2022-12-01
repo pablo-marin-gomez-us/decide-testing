@@ -1,20 +1,12 @@
 import random
 import itertools
-from click import option
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase
-from rest_framework.test import APIClient
-from rest_framework.test import APITestCase
-from pyexpat import model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 
 from base import mods
 from base.tests import BaseTestCase
@@ -364,8 +356,8 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.json(), 'Voting already tallied')
 
 
-class VotingVisualizerTestCase(StaticLiveServerTestCase):
 
+class VotingVisualizerTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
         #Load base test functionality for decide
@@ -373,36 +365,116 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         self.base.setUp()
 
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
 
-        super().setUp()            
+        super().setUp()      
             
-    def tearDown(self):           
+    def tearDown(self):    
         super().tearDown()
         self.driver.quit()
 
         self.base.tearDown()
         
-    def test_noStartVoting_visualizer(self):        
-        q = Question(desc='test question')
+    def test_noStartVoting_visualizer(self):
+        q = Question(desc='test question 1')
         q.save()
-        v = Voting(name='test voting', question=q)
+        v = Voting(name='test voting 1', question=q, desc='test voting 1')
         v.save()
+        
         response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vState= self.driver.find_element(By.TAG_NAME,"h2").text
-        self.assertTrue(vState, "Votación no comenzada")
+        self.assertTrue(vState=="Votación no comenzada")
+        
         vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
-        self.assertTrue(vDesc, "Descripción de la votación: {}".format(v.desc))
+        textoDesc="Descripción de la votación: {}".format(v.desc)
+        self.assertTrue(vDesc==textoDesc)
     
-    def test_startVoting_visualizer(self):        
-        q = Question(desc='test question')
+    def test_startVoting_visualizer(self):
+        q = Question(desc='test question 2')
         q.save()
         date = timezone.now()
-        v = Voting(name='test voting', question=q, seats=10, start_date=date)
+        v = Voting(name='test voting 2', question=q, desc='test voting 2',start_date=date)
         v.save()
+        
         response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vState= self.driver.find_element(By.TAG_NAME,"h2").text
-        self.assertTrue(vState, "Votación en curso")
-        vDate= self.driver.find_element(By.TAG_NAME,"h3").text
-        self.assertTrue(vDate, "echa de inicio de la votación: : {}".format(date))
+        self.assertTrue(vState=="Votación en curso")
+        
+        vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
+        textoDesc="Descripción de la votación: {}".format(v.desc)
+        self.assertTrue(vDesc==textoDesc)
+        
+        vDate= self.driver.find_element(By.CLASS_NAME,"inicio").text
+        textoFechaInicio="Fecha de inicio de la votación: {}".format(v.start_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vDate==textoFechaInicio)
+
+    def test_finishVoting_visualizer(self):
+        q = Question(desc='test question 3')
+        q.save()
+        date = timezone.now()
+        v = Voting(name='test voting 3', question=q, desc='test voting 3', start_date=date, end_date=date)
+        v.save()
+        
+        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
+        textoDesc="Descripción de la votación: {}".format(v.desc)
+        self.assertTrue(vDesc==textoDesc)
+        
+        vStartDate= self.driver.find_element(By.CLASS_NAME,"inicio").text
+        textoFechaInicio="Fecha de inicio de la votación: {}".format(v.start_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vStartDate==textoFechaInicio)
+        
+        vEndDate= self.driver.find_element(By.CLASS_NAME,"fin").text
+        textoFechaFin="Fecha de fin de la votación: {}".format(v.end_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vEndDate==textoFechaFin)
+
+    def test_postProcVoting_noSeats_visualizer(self):
+        q = Question(desc='test question 4')
+        q.save()
+        date = timezone.now()
+        v = Voting(name='test voting 4', question=q, desc='test voting 4', start_date=date, end_date=date)
+        v.save()
+
+        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
+        textoDesc="Descripción de la votación: {}".format(v.desc)
+        
+        self.assertTrue(vDesc==textoDesc)
+        vStartDate= self.driver.find_element(By.CLASS_NAME,"inicio").text
+        textoFechaInicio="Fecha de inicio de la votación: {}".format(v.start_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vStartDate==textoFechaInicio)
+        
+        vEndDate= self.driver.find_element(By.CLASS_NAME,"fin").text
+        textoFechaFin="Fecha de fin de la votación: {}".format(v.end_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vEndDate==textoFechaFin)
+
+        tipoResultado = self.driver.find_element(By.XPATH,"//table/thead/tr/th[2]").text
+        self.assertTrue(tipoResultado=="Puntuación",print(tipoResultado))
+    
+    def test_postProcVoting_seats_visualizer(self):
+        q = Question(desc='test question 5')
+        q.save()
+        date = timezone.now()
+        v = Voting(name='test voting 5', question=q, desc='test voting 5', seats=5, min_percentage_representation=10, start_date=date, end_date=date)
+        v.save()
+        
+        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
+        textoDesc="Descripción de la votación: {}".format(v.desc)
+        
+        self.assertTrue(vDesc==textoDesc)
+        vStartDate= self.driver.find_element(By.CLASS_NAME,"inicio").text
+        textoFechaInicio="Fecha de inicio de la votación: {}".format(v.start_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vStartDate==textoFechaInicio)
+        
+        vEndDate= self.driver.find_element(By.CLASS_NAME,"fin").text
+        textoFechaFin="Fecha de fin de la votación: {}".format(v.end_date.strftime("%d/%m/%Y, %H:%M:%S"))
+        self.assertTrue(vEndDate==textoFechaFin)
+
+        tipoResultado = self.driver.find_element(By.XPATH,"//table/thead/tr/th[2]").text
+        self.assertTrue(tipoResultado=="Escaños")
+
+        minPercentage = self.driver.find_element(By.CLASS_NAME,"minPercentage").text
+        textoMinPercentage="Porcentaje mínimo para tener representación: {}% de los votos totales".format(v.min_percentage_representation)
+        self.assertTrue(minPercentage==textoMinPercentage)
