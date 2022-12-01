@@ -8,8 +8,16 @@
     </head>
     <body>
         {% block content %}
+            <div class="btn-group btn-group-toggle"  style="float:right; padding-right:20px;"  data-toggle="buttons">
+                <label class="btn btn-secondary active">
+                    <input type="radio" name="options" id="option1" autocomplete="off" checked> Español
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="options" id="option2" autocomplete="off"> Ingles
+                </label>
+            </div>
         {% endblock %}
-
+       
         {% block extrabody %}{% endblock %}
     </body>
 </html>
