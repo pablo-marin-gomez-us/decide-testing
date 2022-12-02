@@ -1,0 +1,42 @@
+# decide auth translation
+# This file is distributed under the same license as the main project
+
+# Translators: Francisco Javier Migueles <framigdom@alum.us.es>, 2022
+
+msgid ""
+msgstr ""
+
+"Language: en\n"
+"Last-Translator: Francisco Javier Migueles\n"
+"POT-Creation-Date: 2022-12-01 18:45+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "saludo"
+msgstr "Hi"
+
+msgid "botonRegistrar"
+msgstr "Please click on the link below to confirm your registration"
+
+msgid "registrar"
+msgstr "Registration"
+
+msgid "infoRegistrar"
+msgstr "Please fill in this form to create an account."
+
+msgid "first_name"
+msgstr "First Name"
+
+msgid "last_name"
+msgstr "Last Name"
+
+msgid "username"
+msgstr "Username"
+
+msgid "email"
+msgstr "Email"
+
+msgid "password"
+msgstr "Password"
