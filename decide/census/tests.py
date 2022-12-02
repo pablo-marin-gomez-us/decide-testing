@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
+from census import census_utils as censusUtils
 
 
 class CensusTestCase(BaseTestCase):
@@ -73,3 +74,35 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
+
+class ExportCensusTestCase(BaseTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.census = Census(voting_id=1, voter_id=12)
+        self.census.save()
+
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
+
+    def test_census_utils(self):
+        form_values = ['2','4','5']
+        selected_atributes = ['id']
+        voters_data = []
+
+        census = Census.objects.filter(voting_id=1).values()
+        user_atributes = censusUtils.get_user_atributes()
+        data = censusUtils.get_csvtext_and_data(form_values, census)
+
+        for value in form_values:
+            atribute = str(user_atributes[int(value)][1])
+            selected_atributes.append(atribute)
+        self.assertEquals(selected_atributes, data[1]) # headers
+        
+        voter = User.objects.filter(id=12).values()[0]
+        voter_data = []
+        for atribute in selected_atributes:
+            voter_data.append(str(voter[atribute]))
+        voters_data.append(voter_data)
+        self.assertEquals(voters_data, data[2]) # atribures values

@@ -13,7 +13,7 @@ def get_user_atributes():
 
     return atributes_list
 
-# csvtext -> Header1,Header2,Headder3/value1,value2,value3/value1,value2,value3/
+# csvtext -> Header1,Header2,Header3/value1,value2,value3/value1,value2,value3/
 def get_csvtext_and_data(form_values, census):
     atributes_list = get_user_atributes()
     voters_data = []
@@ -30,7 +30,6 @@ def get_csvtext_and_data(form_values, census):
             census_text += ','
         else:
             census_text += '/'
-    
 
     # CSV values
     for c in census:
