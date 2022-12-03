@@ -62,5 +62,14 @@ msgstr "Votos"
 msgid "graph_info"
 msgstr "Gráficas de la votación:"
 
+msgid "graph_votes"
+msgstr "Gráfica de votos"
+
+msgid "graph_seats"
+msgstr "Gráfica de escaños"
+
+msgid "graph_percentage"
+msgstr "Gráfica de porcentaje de representación"
+
 msgid "graph"
 msgstr "Grafica"
