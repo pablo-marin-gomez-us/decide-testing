@@ -70,16 +70,16 @@
             </div>
         </br>
             <div>
-                <h2 class="heading">{% trans "graph_info" %}:</h2>  
+                <h2 id="graphs_title" class="heading">{% trans "graph_info" %}:</h2>  
 
                 <div class="chart-container" style="position: relative; height:40vh; width:80vw">
                      
-                        <h5>{% trans "graph" %} 1</h5> 
-                        <canvas id="Graph1"></canvas>
-                        <h5>{% trans "graph" %} 2</h5> 
-                        <canvas id="Graph2"></canvas>
-                        <h5>{% trans "graph" %} 3</h5> 
-                        <canvas id="Graph3"></canvas>
+                    <h5 id="graph_title_1">{% trans "graph_votes" %}</h5>
+                    <canvas id="Graph1"></canvas>
+                    <h5 id="graph_title_2">{% trans "graph_seats" %}</h5>
+                    <canvas id="Graph2"></canvas>
+                    <h5 id="graph_title_3">{% trans "graph_percentage" %}</h5>
+                    <canvas id="Graph3"></canvas>
                     
                 </div>     
                            
