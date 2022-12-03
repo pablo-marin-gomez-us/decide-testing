@@ -82,5 +82,16 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         title_text = self.driver.find_element(By.ID,'graph_title_1').text
         self.assertEqual(title_text,'Gráfica de votos')
 
+    def test_graph_title_2_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        title_text = self.driver.find_element(By.ID,'graph_title_2').text
+        self.assertEqual(title_text,'Gráfica de escaños')
 
 # Create your tests here.
