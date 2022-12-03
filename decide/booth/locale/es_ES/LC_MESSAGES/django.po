@@ -14,6 +14,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# Booth
+
 msgid "decide"
 msgstr "Decide"
 
@@ -43,3 +45,32 @@ msgstr "Error"
 
 msgid "Conglatulations. Your vote has been sent"
 msgstr "¡Enhorabuena! Tu voto se ha enviado"
+
+msgid "registered_as_1"
+msgstr "Registrado en "
+
+msgid "registered_as_2"
+msgstr " como "
+
+msgid "vote_with"
+msgstr "Votar como"
+
+# Votings
+
+msgid "voting"
+msgstr "Votación"
+
+msgid "link_voting"
+msgstr "Enlace a la votación"
+
+msgid "link_census"
+msgstr "Enlace al censo"
+
+msgid "booth_voting"
+msgstr "Booth votación "
+
+msgid "closed_voting"
+msgstr "Votación cerrada"
+
+msgid "voting_census"
+msgstr "Censo votación "
