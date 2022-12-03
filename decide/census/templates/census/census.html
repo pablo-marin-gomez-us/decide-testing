@@ -13,30 +13,30 @@
     <div id="app-census">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <b-navbar-brand tag="h1">{% trans "decide" %}</b-navbar-brand>
         </b-navbar>     
         
 
          <!-- IMPORT  -->
 
         <div class="manage-container">
-            <h2> Administración de censos en votaciones</h2>
+            <h2> {% trans "administration_census" %}</h2>
             
             <form method="POST" enctype="multipart/form-data">
                
-            <label for="votation">¿A qué votación quieres añadir el censo?</label>
+            <label for="votation">{% trans "add_census_question" %}</label>
             <input id="votation" type="text" name="votation">
             <br>
 
-            <label for="file">Selecciona el archivo desde el que deseas importar tu censo</label>
+            <label for="file">{% trans "select_file" %}</label>
             <input type="file" name="file">
             <br>
 
-            <label for="user">Introduzca el usuario administrador que importará el censo</label>
+            <label for="user">{% trans "input_user_admin" %}</label>
             <input type="text" name="user">
             <br>
             
-            <label for="password">Introduzca la contraseña del usuario administrador</label>
+            <label for="password">{% trans "input_user_admin_password" %}</label>
             <input type="password" name="password">
             
             <br>

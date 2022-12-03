@@ -16,9 +16,9 @@
             <thead>
                  <tr>
                       <th scope="col">#</th>
-                      <th scope="col">Votación</th>
-                      <th scope="col">Enlace a la votación</th>
-                      <th scope="col">Enlace al censo</th>
+                      <th scope="col">{% trans "voting" %}</th>
+                      <th scope="col">{% trans "link_voting" %}</th>
+                      <th scope="col">{% trans "link_census" %}</th>
                  </tr>
             </thead>
             <tbody>
@@ -27,11 +27,11 @@
                       <th scope="row">{{voting.id}}</th>
                             <td>{{voting.name}}</td>
                             {% if voting.end_date == None %}
-                            <td><a href="/booth/{{voting.id}}"><p>Booth votación {{voting.id}}</p></a></td>
+                            <td><a href="/booth/{{voting.id}}"><p>{% trans "booth_voting" %} {{voting.id}}</p></a></td>
                             {% else %}
-                            <td><p>Votación cerrada</p></td>
+                            <td><p>{% trans "closed_voting" %}</p></td>
                             {% endif %}
-                            <td><a href="/census/export/{{voting.id}}"><p>Censo votación {{voting.id}}</p></a></td>
+                            <td><a href="/census/export/{{voting.id}}"><p>{% trans "voting_census" %} {{voting.id}}</p></a></td>
                  </tr>
                  {% endfor %}
             </tbody>
