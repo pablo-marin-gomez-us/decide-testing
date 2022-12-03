@@ -58,5 +58,16 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
 
         self.assertTrue(len(self.driver.find_elements(By.CLASS_NAME,'errornote'))==1)
 
+    def test_graphs_title_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        title_text = self.driver.find_element(By.ID,'graphs_title').text
+        self.assertEqual(title_text,'Gráficas de la votación:')
 
 # Create your tests here.
