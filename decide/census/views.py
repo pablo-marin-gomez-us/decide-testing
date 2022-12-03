@@ -10,6 +10,7 @@ from rest_framework.status import (
         HTTP_204_NO_CONTENT as ST_204,
         HTTP_400_BAD_REQUEST as ST_400,
         HTTP_401_UNAUTHORIZED as ST_401,
+        HTTP_404_NOT_FOUND as ST_404,
         HTTP_409_CONFLICT as ST_409
 )
 from rest_framework.views import APIView
@@ -111,8 +112,16 @@ class CensusView(APIView,TemplateView):
 
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
-        
+
+
 def export_census(request, voting_id):
+    if list(Voting.objects.filter(id=voting_id).values())== []:
+        template = loader.get_template('errors.html')
+        context = {
+            'message':'404 Voting not found'
+        }
+        return HttpResponse(template.render(context, request), status=404)
+
     template = loader.get_template('export_census.html')
     formulario = AtributosUser()
     voting = Voting.objects.filter(id=voting_id).values()[0]
