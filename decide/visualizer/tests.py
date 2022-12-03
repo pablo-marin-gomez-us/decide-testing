@@ -1,11 +1,8 @@
-from django.test import TestCase
 from voting.models import Voting, Question
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
 from base.tests import BaseTestCase
@@ -58,5 +55,86 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
 
         self.assertTrue(len(self.driver.find_elements(By.CLASS_NAME,'errornote'))==1)
 
+    def test_graphs_title_exist(self):
 
-# Create your tests here.
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        title_text = self.driver.find_element(By.ID,'graphs_title').text
+        self.assertEqual(title_text,'Gráficas de la votación:')
+    
+    def test_graph_title_1_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        title_text = self.driver.find_element(By.ID,'graph_title_1').text
+        self.assertEqual(title_text,'Gráfica de votos')
+
+    def test_graph_title_2_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        title_text = self.driver.find_element(By.ID,'graph_title_2').text
+        self.assertEqual(title_text,'Gráfica de escaños')
+        
+    def test_graph_title_3_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        title_text = self.driver.find_element(By.ID,'graph_title_3').text
+        self.assertEqual(title_text,'Gráfica de porcentaje de representación')
+
+    def test_graph_canvas_1_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        canvas_is_displayed = self.driver.find_element(By.ID,'Graph1').is_displayed()
+        self.assertTrue(canvas_is_displayed)
+
+    def test_graph_canvas_2_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        canvas_is_displayed = self.driver.find_element(By.ID,'Graph2').is_displayed()
+        self.assertTrue(canvas_is_displayed)
+
+    def test_graph_canvas_3_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        canvas_is_displayed = self.driver.find_element(By.ID,'Graph3').is_displayed()
+        self.assertTrue(canvas_is_displayed)

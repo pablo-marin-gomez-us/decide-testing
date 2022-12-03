@@ -5,48 +5,48 @@
     <form method="POST">
         {% csrf_token %}
         <div class="form-group">
-            <h1>Register</h1>
-            <p>Please fill in this form to create an account.</p>
+            <h1>{% trans "registrar" %}:</h1>
+            <p>{% trans "infoRegistrar" %}</p>
             <hr>
             <div class="form-row">
                 <div class="form-group col-md-6 mb-0">
-                    <label for="first_name"><b>First Name</b></label>
+                    <label for="first_name"><b>{% trans "first_name" %}</b></label>
                     <input type="text" placeholder="Enter first name" name="first_name" id="first_name">
                 </div>
                 <br>
                 <div class="form-group col-md-6 mb-0">
-                    <label for="last_name"><b>Last Name</b></label>
+                    <label for="last_name"><b>{% trans "last_name" %}</b></label>
                     <input type="text" placeholder="Enter last name" name="last_name" id="last_name">
                 </div>
                 <br>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6 mb-0">
-                    <label for="username"><b>Username</b></label>
+                    <label for="username"><b>{% trans "username" %}</b></label>
                     <input type="text" placeholder="Enter user name" name="username" id="username">
                 </div>
                 <br>
                 <div class="form-group col-md-6 mb-0">
-                    <label for="email"><b>Email</b></label>
+                    <label for="email"><b>{% trans "email" %}</b></label>
                     <input type="text" placeholder="Enter Email" name="email" id="email">
                 </div>
                 <br>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6 mb-0">
-                    <label for="password"><b>Password</b></label>
+                    <label for="password"><b>{% trans "password" %}</b></label>
                     <input type="password" placeholder="Enter Password" name="password" id="password">
                 </div>
             </div>
         </div>
 
-        <p>By registering, you accept the <a href="#">Terms & Privacy</a>.</p>
+        <p>{% trans "acceptRegister" %}<a href="#">{% trans "terms" %}</a>.</p>
 
         <div class="form-group">
-            <button class="registerbtn" type="submit">Register</button>
+            <button class="registerbtn" type="submit">{% trans "registrar" %}</button>
         </div>
         <div class="container signin">
-            <p>Already have an account? <a href="/">Sign In</a></p>
+            <p>{% trans "alreadyAccount" %}<a href="/">{% trans "sign" %}</a></p>
         </div>
     </form>
 </div>

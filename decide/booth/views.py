@@ -3,8 +3,11 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import Http404
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.template import loader
 
 from base import mods
+from voting.models import Voting
 
 
 # TODO: check permissions and census
@@ -38,3 +41,11 @@ class BoothView(TemplateView):
 
 
         return context
+
+def list_votings(request):
+  template = loader.get_template('booth/votings.html')
+  votings = Voting.objects.all()
+  context = {
+    'votings': votings
+  }
+  return HttpResponse(template.render(context, request))
