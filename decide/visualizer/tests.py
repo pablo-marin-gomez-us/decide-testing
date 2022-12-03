@@ -105,4 +105,16 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
         title_text = self.driver.find_element(By.ID,'graph_title_3').text
         self.assertEqual(title_text,'Gráfica de porcentaje de representación')
+
+    def test_graph_canvas_1_exist(self):
+
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        canvas_is_displayed = self.driver.find_element(By.ID,'Graph1').is_displayed()
+        self.assertTrue(canvas_is_displayed)
 # Create your tests here.
