@@ -14,6 +14,7 @@ class AuthTestCase(APITestCase):
         self.client = APIClient()
         mods.mock_query(self.client)
         u = User(username='voter1')
+        u.email = 'voter1@gmail.com'
         u.set_password('123')
         u.save()
 
@@ -35,6 +36,19 @@ class AuthTestCase(APITestCase):
 
     def test_login_fail(self):
         data = {'username': 'voter1', 'password': '321'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_login_email(self):
+        data = {'username': 'voter1@gmail.com', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        token = response.json()
+        self.assertTrue(token.get('token'))
+
+    def test_login_fail_email(self):
+        data = {'username': 'voter1@gmail.com', 'password': '321'}
         response = self.client.post('/authentication/login/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
