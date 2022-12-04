@@ -10,6 +10,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from unittest import mock
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser
+from django.test import override_settings
+from base.tests import BaseTestCase
+from django.urls import reverse
+from voting.models import Voting, Question, QuestionOption
+from django.utils import timezone
+from mixnet.models import Auth
+from django.conf import settings
+
+from social_django.models import UserSocialAuth
+from social_django.views import get_session_timeout
 
 from base.tests import BaseTestCase
 
@@ -22,6 +36,7 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
 
         v = Voting(name='test voting', question=q)
         v.save()
+
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
         a.save()
@@ -40,7 +55,6 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         options.headless = True
         self.driver = webdriver.Chrome(options=options)
         
-
     def tearDown(self):           
         super().tearDown()
         self.driver.quit()
@@ -78,4 +92,45 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
 
         return self.assertEqual(login,"Login with GitHub")  
-        
+
+
+@override_settings(SOCIAL_AUTH_GITHUB_KEY='1',
+                   SOCIAL_AUTH_GITHUB_SECRET='2')
+class TestViews(BaseTestCase):
+
+    def setUp(self):
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.voting = None
+
+    def create_voting(self):
+        q = Question(desc='test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def test_backend_exists(self):
+        response = self.client.get(reverse('social:begin', kwargs={'backend': 'github'}))
+        self.assertEqual(response.status_code, 302)
+
+    def test_backend_not_exists(self):
+        url = reverse('social:begin', kwargs={'backend': 'blabla'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    #def test_logged_booth_view(self):
+    #    v = self.create_voting()
+    #    response = self.client.get('/booth/{}'.format(v.pk))
+    #    self.assertEqual(response.status_code, 302)
