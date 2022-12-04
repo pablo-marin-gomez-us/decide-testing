@@ -105,4 +105,4 @@ class ExportCensusTestCase(BaseTestCase):
         for atribute in selected_atributes:
             voter_data.append(str(voter[atribute]))
         voters_data.append(voter_data)
-        self.assertEquals(voters_data, data[2]) # atribures values
+        self.assertEquals(voters_data, data[2]) # atributes values

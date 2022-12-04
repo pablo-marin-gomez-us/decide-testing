@@ -31,13 +31,14 @@
      
         <div class="voting container">
             <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
-            <h3>{% trans "vName" %}: [[ voting.name ]]</h3>
+            <h1>{% trans "vName" %}: [[ voting.name ]]</h1>
 
             <h3>{% trans "desc" %}: [[ voting.desc ]]</h2>
-            <h3>{% trans "startDate" %}: [[ startDate ]]</h3>
+            <h4 class="inicio" v-if="voting.start_date">F{% trans "startDate" %}: [[ startDate ]]</h4>
 
             <h2 v-if="!voting.start_date">{% trans "nonstarted" %}</h2>
             <h2 v-else-if="!voting.end_date">{% trans "running" %}</h2>
+
             <div v-else>
                 <h3>{% trans "endDate" %}: [[ endDate ]]</h3>
                 <br>
@@ -60,10 +61,10 @@
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
-                            <th>[[opt.option]]</th>
-                            <td v-if="voting.escaños!=0">[[opt.seats]]</td>
-                            <td v-if="voting.escaños==0">[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
+                            <th class="opciones">[[opt.option]]</th>
+                            <td class="resultados" v-if="voting.seats!=0">[[opt.seats]]</td>
+                            <td class="resultados" v-if="voting.seats==0">[[opt.postproc]]</td>
+                            <td class="votos" class="text-muted">[[opt.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,8 +99,16 @@
 
     <script>
         var voting = {{voting|safe}};
-        var startDate = new Date(voting.start_date).toLocaleString();
-        var endDate = new Date(voting.end_date).toLocaleString();
+        var newDateOptions = {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+            };
+        var startDate = new Date(voting.start_date).toLocaleString("es", newDateOptions);
+        var endDate = new Date(voting.end_date).toLocaleString("es", newDateOptions);
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
