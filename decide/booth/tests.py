@@ -17,6 +17,21 @@ from base.tests import BaseTestCase
 class BoothTranslationTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        super().setUp()    
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+    
+
+    def tearDown(self):           
+        super().tearDown()
+        self.driver.quit()
+        self.base.tearDown()
+
+    def crear_votacion(self):
         q = Question(desc = 'test question')
         q.save()
 
@@ -31,34 +46,23 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         v.save()
 
         self.v_id = v.id
-
-        super().setUp()    
-        self.base = BaseTestCase()
-        self.base.setUp()
-
-        options = webdriver.ChromeOptions()
-        options.headless = True
-        self.driver = webdriver.Chrome(options=options)
-        
-
-    def tearDown(self):           
-        super().tearDown()
-        self.driver.quit()
-        self.base.tearDown()
-
+        return v.id
     def testCheckIDTransES(self):
+        self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         title = self.driver.find_elements(By.TAG_NAME, 'h1')[1].text
         title = title.split(": ")[0]   
         return self.assertEqual(str(title),'ID de la votación')
 
     def testCheckNombreTransES(self):
+        self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         sub_title = self.driver.find_element(By.TAG_NAME, 'h3').text
         sub_title = sub_title.split(": ")[0]      
         return self.assertEqual(str(sub_title),'Nombre de la votación')
 
     def testCheckInputsTransES(self):
+        self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         inputs = [element.text for element in self.driver.find_elements(By.TAG_NAME, 'label')]
         
@@ -68,12 +72,14 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         return local_check
     
     def testCheckLoginTransES(self):
+        self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         login = self.driver.find_element(By.TAG_NAME, 'button').text
 
         return self.assertEqual(login,"Identificarse")
 
     def testCheckGitHubTransES(self):
+        self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
 
