@@ -60,7 +60,7 @@ msgid "votes"
 msgstr "Votos"
 
 msgid "graph_info"
-msgstr "Gráficas de la votación:"
+msgstr "Gráficas de la votación"
 
 msgid "graph_votes"
 msgstr "Gráfica de votos"
