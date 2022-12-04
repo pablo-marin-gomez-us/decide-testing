@@ -11,4 +11,4 @@ class AtributosUser(forms.Form):
             atributes_list.append((counter, atribute))
             counter += 1
 
-    user_atributes = forms.MultipleChoiceField(label="Selecciona los atributos ", choices=atributes_list, widget=forms.CheckboxSelectMultiple)
+    user_atributes = forms.MultipleChoiceField(label="", choices=atributes_list, widget=forms.CheckboxSelectMultiple)
