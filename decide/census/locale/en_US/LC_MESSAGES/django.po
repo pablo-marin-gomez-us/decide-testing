@@ -60,6 +60,10 @@ msgstr "Last name"
 msgid "voter_id"
 msgstr "Voter ID"
 
+msgid "select_atr"
+msgstr "Select the attribute:"
+
+
 
 
 
