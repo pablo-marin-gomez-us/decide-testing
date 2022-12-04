@@ -14,13 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "saludo"
-msgstr "Hi"
-
-msgid "botonRegistrar"
-msgstr "Please click on the link below to confirm your registration"
-
-msgid "registrar"
+msgid "register"
 msgstr "Registration"
 
 msgid "infoRegistrar"
@@ -40,3 +34,15 @@ msgstr "Email"
 
 msgid "password"
 msgstr "Password"
+
+msgid "acceptRegister"
+msgstr "By registering, you accept the"
+
+msgid "terms"
+msgstr "Terms & Privacy"
+
+msgid "alreadyAccount"
+msgstr "Already have an account?"
+
+msgid "sign"
+msgstr "Sign In"

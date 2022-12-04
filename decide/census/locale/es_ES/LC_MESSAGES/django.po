@@ -15,6 +15,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "decide"
+msgstr "Decide"
+
+# Census
+
+msgid "administration_census"
+msgstr "Administración de censos en votaciones"
+
+msgid "add_census_question"
+msgstr "¿A qué votación quieres añadir el censo?"
+
+msgid "select_file"
+msgstr "Selecciona el archivo desde el que deseas importar tu censo"
+
+msgid "input_user_admin"
+msgstr "Introduzca el usuario administrador que importará el censo"
+
+msgid "input_user_admin_password"
+msgstr "Introduzca la contraseña del usuario administrador"
+
+# Export census
 msgid "census"
 msgstr "Censo:"
 
@@ -38,6 +59,7 @@ msgstr "Segundo Apellido"
 
 msgid "voter_id"
 msgstr "ID del votannte"
+
 
 
 

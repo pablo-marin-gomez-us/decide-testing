@@ -31,55 +31,56 @@
      
         <div class="voting container">
             <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
-            <h3>{% trans "vName" %}: [[ voting.name ]]</h3>
+            <h1>{% trans "vName" %}: [[ voting.name ]]</h1>
 
-            <h3>Descripción de la votación: [[ voting.desc ]]</h2>
-            <h3>Fecha de inicio de la votación: [[ startDate ]]</h3>
+            <h3>{% trans "desc" %}: [[ voting.desc ]]</h2>
+            <h4 class="inicio" v-if="voting.start_date">F{% trans "startDate" %}: [[ startDate ]]</h4>
 
             <h2 v-if="!voting.start_date">{% trans "nonstarted" %}</h2>
             <h2 v-else-if="!voting.end_date">{% trans "running" %}</h2>
+
             <div v-else>
-                <h3>Fecha de fin de la votación: [[ endDate ]]</h3>
+                <h3>{% trans "endDate" %}: [[ endDate ]]</h3>
                 <br>
                 <h2 class="heading"> {% trans "results" %}</h2>
 
                 <div v-if="voting.ecaños!=0">
-                    <h3>Número de escaños a repartir: [[ voting.seats ]]</h3>
-                    <h3>Porcentaje mínimo para tener representación: [[ voting.min_percentage_representation ]]% de los votos totales</h3>
-                    <p> El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos</p>
+                    <h3>{% trans "seatsNum" %}: [[ voting.seats ]]</h3>
+                    <h3>{% trans "minPercentage_1" %}: [[ voting.min_percentage_representation ]]% {% trans "minPercentage_2" %}</h3>
+                    <p> {% trans "hontDes" %}</p>
                 </div>
 
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>{% trans "option" %}</th>
-                            <th v-if="voting.escaños!=0">Escaños</th>
+                            <th v-if="voting.escaños!=0">{% trans "seats" %}</th>
                             <th v-if="voting.escaños==0">{% trans "points" %}</th>
                             <th>{% trans "votes" %}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
-                            <th>[[opt.option]]</th>
-                            <td v-if="voting.escaños!=0">[[opt.seats]]</td>
-                            <td v-if="voting.escaños==0">[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
+                            <th class="opciones">[[opt.option]]</th>
+                            <td class="resultados" v-if="voting.seats!=0">[[opt.seats]]</td>
+                            <td class="resultados" v-if="voting.seats==0">[[opt.postproc]]</td>
+                            <td class="votos" class="text-muted">[[opt.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </br>
             <div>
-                <h2 class="heading">Gráficas de la votación:</h2>  
+                <h2 id="graphs_title" class="heading">{% trans "graph_info" %}:</h2>  
 
                 <div class="chart-container" style="position: relative; height:40vh; width:80vw">
                      
-                        <h5>Grafica 1</h5> 
-                        <canvas id="Graph1"></canvas>
-                        <h5>Grafica 2</h5> 
-                        <canvas id="Graph2"></canvas>
-                        <h5>Grafica 3</h5> 
-                        <canvas id="Graph3"></canvas>
+                    <h5 id="graph_title_1">{% trans "graph_votes" %}</h5>
+                    <canvas id="Graph1"></canvas>
+                    <h5 id="graph_title_2">{% trans "graph_seats" %}</h5>
+                    <canvas id="Graph2"></canvas>
+                    <h5 id="graph_title_3">{% trans "graph_percentage" %}</h5>
+                    <canvas id="Graph3"></canvas>
                     
                 </div>     
                            
@@ -98,8 +99,16 @@
 
     <script>
         var voting = {{voting|safe}};
-        var startDate = new Date(voting.start_date).toLocaleString();
-        var endDate = new Date(voting.end_date).toLocaleString();
+        var newDateOptions = {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+            };
+        var startDate = new Date(voting.start_date).toLocaleString("es", newDateOptions);
+        var endDate = new Date(voting.end_date).toLocaleString("es", newDateOptions);
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',

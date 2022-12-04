@@ -90,7 +90,6 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
     def testCheckGitHubTransES(self):
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
-
         return self.assertEqual(login,"Login with GitHub")  
 
 
