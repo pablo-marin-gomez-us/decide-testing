@@ -79,7 +79,8 @@ class ExportCensusTestCase(BaseTestCase):
 
     def setUp(self):
         super().setUp()
-        self.census = Census(voting_id=1, voter_id=12)
+        self.voter_id = User.objects.all().values()[0]['id']
+        self.census = Census(voting_id=1, voter_id=self.voter_id)
         self.census.save()
 
     def tearDown(self):
@@ -100,7 +101,7 @@ class ExportCensusTestCase(BaseTestCase):
             selected_atributes.append(atribute)
         self.assertEquals(selected_atributes, data[1]) # headers
         
-        voter = User.objects.filter(id=12).values()[0]
+        voter = User.objects.filter(id=self.voter_id).values()[0]
         voter_data = []
         for atribute in selected_atributes:
             voter_data.append(str(voter[atribute]))
