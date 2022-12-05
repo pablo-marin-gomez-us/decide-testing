@@ -15,7 +15,7 @@
                <div class="col-md-8">
                     <h1>{% trans "vName" %}: {{voting.name}} </h1>
                     <h3>{% trans "vDesc" %}: {{ voting.desc }}</h3>
-                    <p class="mt-5">Selecciona los atributos:</p>
+                    <p class="mt-5">{% trans "select_atr" %}</p>
                     <form id="formulario" method="post" action=''>{% csrf_token %}
                          <fieldset>
                                {{formulario}}

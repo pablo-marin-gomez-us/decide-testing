@@ -14,32 +14,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# Booth
+
 msgid "decide"
 msgstr "Decide"
 
 msgid "logout"
-msgstr "Leave"
+msgstr "Logout"
 
 msgid "vID"
-msgstr "ID de la votación"
+msgstr "ID of Vote"
 
 msgid "vName"
 msgstr "Name of voting"
 
 msgid "Login"
-msgstr "Identificarse"
+msgstr "Login"
 
 msgid "LoginGitHub"
-msgstr "Identificarse con GitHub"
+msgstr "Login with GitHub"
 
 msgid "LoginFacebook"
-msgstr "Identificarse con Facebook"
+msgstr "Login with Facebook"
 
 msgid "Vote"
-msgstr "Votar"
+msgstr "Vote"
 
 msgid "Error"
 msgstr "Error"
 
 msgid "Conglatulations. Your vote has been sent"
-msgstr "¡Enhorabuena! Tu voto se ha enviado"
+msgstr "Conglatulations. Your vote has been sent"
+
+msgid "registered_as_1"
+msgstr "You are registered "
+
+msgid "registered_as_2"
+msgstr " as "
+
+msgid "vote_with"
+msgstr "You have voted with"
+
+# Votings
+
+msgid "voting"
+msgstr "Voting"
+
+msgid "link_voting"
+msgstr "Link to voting"
+
+msgid "link_census"
+msgstr "Link to census"
+
+msgid "booth_voting"
+msgstr "Booth to voting"
+
+msgid "closed_voting"
+msgstr "Voting closed"
+
+msgid "voting_census"
+msgstr "Census of voting"
