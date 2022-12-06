@@ -30,7 +30,7 @@ class VisualizerView(TemplateView):
                     order[key] = index+1
                 context['order'] = order
                 for index in range(0,len(r[0]['postproc'])):
-                    r[0]['postproc'][index]['order'] = order[index]   
+                    r[0]['postproc'][index]['order'] = order[index]
                 context['voting'] = json.dumps(r[0])
 
         except:
