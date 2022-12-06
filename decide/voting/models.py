@@ -191,7 +191,7 @@ class Voting(models.Model):
         seats = self.seats
         min_percentage_representation = self.min_percentage_representation
 
-        if self.question.multioption == True:
+        if self.question.multioption:
             opts = []
             for optIndex in enumerate(options):
                 votes = 0

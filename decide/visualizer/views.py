@@ -29,9 +29,8 @@ class VisualizerView(TemplateView):
                 for index,key in enumerate(sorted_votes.keys()):
                     order[key] = index+1
                 context['order'] = order
-                for index,opt in enumerate(r[0]['postproc']):
-                    r[0]['postproc'][index]['order'] = order[index]
-                    
+                for index in range(0,len(r[0]['postproc'])):
+                    r[0]['postproc'][index]['order'] = order[index]   
                 context['voting'] = json.dumps(r[0])
 
         except:
