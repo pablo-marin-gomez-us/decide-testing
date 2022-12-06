@@ -1,12 +1,8 @@
 import random
 import itertools
-from click import option
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase
-from rest_framework.test import APIClient
-from rest_framework.test import APITestCase
 
 from base import mods
 from base.tests import BaseTestCase
@@ -30,6 +26,18 @@ class VotingModelTestCase(BaseTestCase):
 
         self.v.save()
 
+        #Creamos una votacion con escaños y porcentaje de representacion
+        q2 = Question(desc="Descripcion seats")
+        q2.save()
+
+        opt11 = QuestionOption(question=q2,option="opcion11")
+        opt11.save()
+        opt22 = QuestionOption(question=q2,option="opcion22")
+        opt22.save()
+
+        self.v1 = Voting(name="Votacion seats", question=q2, seats=5, min_percentage_representation=2)
+        self.v1.save()
+
         super().setUp()
 
     def tearDown(self):
@@ -41,6 +49,18 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEqual(v.question.options.all()[0].option,'opcion1')
         self.assertEqual(v.question.options.all()[1].option,'opcion2')
         self.assertEqual(len(v.question.options.all()),2)
+        #Comprobamos que los escaños y el porcentaje se han inicializado correctamente por defecto, al no indicarlos
+        self.assertEqual(v.seats,0)
+        self.assertEqual(v.min_percentage_representation,5)
+
+    #Comprobamos que se creó correctamente la votacion con escaños y porcentaje de representacion
+    def testExistsSeats(self):
+        v = Voting.objects.get(name="Votacion seats")
+        self.assertEqual(v.question.options.all()[0].option,'opcion11')
+        self.assertEqual(v.question.options.all()[1].option,'opcion22')
+        self.assertEqual(len(v.question.options.all()),2)
+        self.assertEqual(v.seats,5)
+        self.assertEqual(v.min_percentage_representation,2)
 
     def test_create_votingAPI(self):
         self.login()
@@ -55,8 +75,9 @@ class VotingModelTestCase(BaseTestCase):
 
         voting = Voting.objects.get(name='Example')
         self.assertEqual(voting.desc,'Description example')
-
-
+        self.assertEqual(voting.seats,0)
+        self.assertEqual(voting.min_percentage_representation,5)
+    
 
 
 
@@ -73,6 +94,17 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(str(v), "test voting")
         self.assertEqual(str(v.question),"test question")
         self.assertEqual(str(v.question.options.all()[0]),"option 1 (2)")
+        #Comprobamos que los escaños y el porcentaje se han inicializado correctamente por defecto, al no indicarlos
+        self.assertEqual(v.seats,0)
+        self.assertEqual(v.min_percentage_representation,5)
+
+        #También comprobamos el toString para una votación con escaños y porcentaje de representación indicados en la creación de la votación
+        vSeats = self.create_voting_seats()
+        self.assertEqual(str(vSeats), "test voting seats")
+        self.assertEqual(str(vSeats.question),"test question seats")
+        self.assertEqual(str(vSeats.question.options.all()[0]),"option 1 (2)")
+        self.assertEqual(vSeats.seats,5)
+        self.assertEqual(vSeats.min_percentage_representation,2)
 
     def test_update_voting_400(self):
         v = self.create_voting()
@@ -96,6 +128,23 @@ class VotingTestCase(BaseTestCase):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
         v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+    
+    #Creamos una votacion con escaños y porcentaje de representacion determinados
+    def create_voting_seats(self):
+        q = Question(desc='test question seats')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting seats', question=q, seats=5, min_percentage_representation=2)
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -142,8 +191,7 @@ class VotingTestCase(BaseTestCase):
         return clear
 
     def test_complete_voting(self):
-        '''
-         v = self.create_voting()
+        v = self.create_voting()
         self.create_voters(v)
 
         v.create_pubkey()
@@ -163,7 +211,42 @@ class VotingTestCase(BaseTestCase):
             self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
 
         for q in v.postproc:
-            self.assertEqual(tally.get(q["number"], 0), q["votes"])'''
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
+    #Comprobamos que se calculan correctamente los escaños en una votación con escaños
+    def test_complete_voting_seats(self):
+        v = self.create_voting_seats()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        #Vamos a recoger en un dicc los votos por opción, además de comprobar que el tally es correcto
+        votos_questiones = {}
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+            votos_questiones[q["option"]] = q["votes"]
+        
+        #Usamos la función hont, la cual calcula el reparto de escaños de todas las opciones mediante sus votos
+        hont = Voting.hont(votos_questiones, v.seats, v.min_percentage_representation)
+        
+        #Por último comprobamos que los escaños que contienen cada opción obtenidos tras el postprocesado del tally
+        #concuerdan con el resultado del repartao de escaños para las opciones con la función hont
+        for q in v.postproc:
+            self.assertEqual(q["seats"], hont[q["option"]])
 
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
