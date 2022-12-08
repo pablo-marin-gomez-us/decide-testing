@@ -48,7 +48,7 @@ msgid "running"
 msgstr "Votación en curso"
 
 msgid "results"
-msgstr "Resultados"
+msgstr "Resultados:"
 
 msgid "option"
 msgstr "Opción"
