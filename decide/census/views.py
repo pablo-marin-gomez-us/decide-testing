@@ -74,7 +74,7 @@ class CensusView(APIView,TemplateView):
             for line in input_iterator:
                 yield line.decode('utf-8')
 
-        def create_voters_csv(request):
+        def create_voters(request):
             HOST = 'http://localhost:8000'
             file = request.FILES['file']
             reader = csv.DictReader(decode_utf8(file))
@@ -101,6 +101,9 @@ class CensusView(APIView,TemplateView):
                     else:
                         invalid_voters.append(username)
                 return voters_pk,invalid_voters
+            else:
+                return Response({'This file format is not supported, try a .csv or .xlsx'}, status=ST_400)
+
         data = {'username': user, 'password': password}
         response = requests.post(HOST + '/authentication/login/', data=data)
         token = response.json()
@@ -109,7 +112,7 @@ class CensusView(APIView,TemplateView):
 
         voters_pk = []
         invalid_voters = []
-        voters_pk,invalid_voters = create_voters_csv(request)
+        voters_pk,invalid_voters = create_voters(request)
 
         def add_census(voters_pk, voting_pk):
             data = {'username': user, 'password': password}
