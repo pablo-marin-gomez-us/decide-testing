@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 import csv
 import requests
 from voting.models import Voting
+import pandas
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -73,20 +74,35 @@ class CensusView(APIView,TemplateView):
             for line in input_iterator:
                 yield line.decode('utf-8')
 
-        def create_voters_csv(request):
+        def create_voters(request):
             HOST = 'http://localhost:8000'
-            reader = csv.DictReader(decode_utf8(request.FILES['file']))
-            for row in reader:
-                aux_list = list(row.values())
-                username = aux_list[0]
-                pwd = aux_list[1]
-                token.update({'username': username, 'password': pwd})
-                response = requests.post(HOST + '/authentication/register/', data=token)
-                if response.status_code == 201:
-                    voters_pk.append(response.json().get('user_pk'))
-                else:
-                    invalid_voters.append(username)
-            return voters_pk,invalid_voters
+            file = request.FILES['file']
+            reader = csv.DictReader(decode_utf8(file))
+            if(file.name.split('.')[1] == 'csv'):
+                for row in reader:
+                    aux_list = list(row.values())
+                    username = aux_list[0]
+                    pwd = aux_list[1]
+                    token.update({'username': username, 'password': pwd})
+                    response = requests.post(HOST + '/authentication/register/', data=token)
+                    if response.status_code == 201:
+                        voters_pk.append(response.json().get('user_pk'))
+                    else:
+                        invalid_voters.append(username)
+                return voters_pk,invalid_voters
+                
+            elif(file.name.split('.')[1] == 'xlsx'):
+                reader = pandas.read_excel(file).to_dict()
+                for username, pwd in zip(list(list(reader.values())[0].values()), list(list(reader.values())[1].values())):
+                    token.update({'username': username, 'password': pwd})
+                    response = requests.post(HOST + '/authentication/register/', data=token)
+                    if response.status_code == 201:
+                        voters_pk.append(response.json().get('user_pk'))
+                    else:
+                        invalid_voters.append(username)
+                return voters_pk,invalid_voters
+            else:
+                return Response({'This file format is not supported, try a .csv or .xlsx'}, status=ST_400)
 
         data = {'username': user, 'password': password}
         response = requests.post(HOST + '/authentication/login/', data=data)
@@ -96,7 +112,7 @@ class CensusView(APIView,TemplateView):
 
         voters_pk = []
         invalid_voters = []
-        voters_pk,invalid_voters = create_voters_csv(request)
+        voters_pk,invalid_voters = create_voters(request)
 
         def add_census(voters_pk, voting_pk):
             data = {'username': user, 'password': password}
@@ -109,7 +125,8 @@ class CensusView(APIView,TemplateView):
 
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
-        
+    
+
 def export_census(request, voting_id):
     template = loader.get_template('export_census.html')
     voting = Voting.objects.filter(id=voting_id).values()[0]
