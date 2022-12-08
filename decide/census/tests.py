@@ -2,7 +2,7 @@ import random
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-
+from voting.models import Voting
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
@@ -79,7 +79,8 @@ class ExportCensusTestCase(BaseTestCase):
 
     def setUp(self):
         super().setUp()
-        self.census = Census(voting_id=1, voter_id=12)
+        self.voter_id = User.objects.all().values()[0]['id']
+        self.census = Census(voting_id=1, voter_id=self.voter_id)
         self.census.save()
 
     def tearDown(self):
@@ -100,9 +101,14 @@ class ExportCensusTestCase(BaseTestCase):
             selected_atributes.append(atribute)
         self.assertEquals(selected_atributes, data[1]) # headers
         
-        voter = User.objects.filter(id=12).values()[0]
+        voter = User.objects.filter(id=self.voter_id).values()[0]
         voter_data = []
         for atribute in selected_atributes:
             voter_data.append(str(voter[atribute]))
         voters_data.append(voter_data)
         self.assertEquals(voters_data, data[2]) # atributes values
+
+    def test_access_denied(self):
+        self.login(user='admin')
+        response = self.client.get('/census/export/{}/'.format(1), format='json')
+        self.assertEqual(response.status_code, 401)
