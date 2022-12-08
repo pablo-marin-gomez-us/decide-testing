@@ -18,24 +18,27 @@ msgid "decide"
 msgstr "Decide"
 
 msgid "desc"
-msgstr "Descripción de la votación: "
+msgstr "Descripción de la votación"
 
 msgid "startDate"
-msgstr "Fecha de inicio de la votación: "
+msgstr "Fecha de inicio de la votación"
 
 msgid "endDate"
-msgstr "Fecha de fin de la votación: "
+msgstr "Fecha de fin de la votación"
 
 msgid "seatsNum"
-msgstr "Número de escaños a repartir: "
+msgstr "Número de escaños a repartir"
 
-msgid "minPercent"
-msgstr "Porcentaje mínimo para tener representación: "
+msgid "minPercentage_1"
+msgstr "Porcentaje mínimo para tener representación"
+
+msgid "minPercentage_2"
+msgstr "% de los votos totales"
 
 msgid "hontDes"
 msgstr "El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos"
 
-msgid "seatsText"
+msgid "seats"
 msgstr "Escaños"
 
 msgid "nonstarted"
@@ -55,3 +58,18 @@ msgstr "Puntuación"
 
 msgid "votes"
 msgstr "Votos"
+
+msgid "graph_info"
+msgstr "Gráficas de la votación:"
+
+msgid "graph_votes"
+msgstr "Gráfica de votos"
+
+msgid "graph_seats"
+msgstr "Gráfica de escaños"
+
+msgid "graph_percentage"
+msgstr "Gráfica de porcentaje de representación"
+
+msgid "graph"
+msgstr "Grafica"

@@ -64,9 +64,9 @@ REST_FRAMEWORK = {
 AUTH_AUTHENTICATION_TYPE = 'both'
 
 AUTHENTICATION_BACKENDS = [
+    'base.backends.AuthBackend',
     'authentication.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'base.backends.AuthBackend',
     'social_core.backends.github.GithubOAuth2',
 ]
 
@@ -164,10 +164,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
+LANGUAGE_CODE = 'en_US'
 LANGUAGE_CODE = 'es_ES'
+
+
 
 LANGUAGES = (
     ('es', _('Spanish')),
+    ('en_US', _('English')),
 )
 
 TIME_ZONE = 'UTC'
@@ -209,6 +213,5 @@ if os.path.exists("config.jsonnet"):
 
 SOCIAL_AUTH_GITHUB_KEY = 'd781104d572cee72044d'
 SOCIAL_AUTH_GITHUB_SECRET = 'fd224f92a08f2fd84062936c082876fc5c901cc2'
-
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
