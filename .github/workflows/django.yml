@@ -11,10 +11,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy: 
      matrix:
-          pyversion: ['3.6.14', '3.8']
+          pyversion: ['3.6.15', '3.8']
           postgresversion: ['postgres:10.8','postgres:12']
           
 
