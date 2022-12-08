@@ -60,6 +60,10 @@ msgstr "Apellido"
 msgid "voter_id"
 msgstr "ID del votannte"
 
+# Errors
+
+msgid "goBack"
+msgstr "Volver a la lista de votaciones"
 
 
 
