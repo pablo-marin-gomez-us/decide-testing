@@ -130,7 +130,6 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         canvas_is_displayed = self.driver.find_element(By.ID,'Graph3').is_displayed()
         self.assertTrue(canvas_is_displayed)
 
-
 class VotingVisualizerTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
@@ -224,7 +223,6 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         self.assertTrue(vEndDate==textoFechaFin)
 
         tipoResultado = self.driver.find_element(By.XPATH,"//table/thead/tr/th[2]").text
-        print(tipoResultado)
         self.assertTrue(tipoResultado=="Puntuación")
     
     def test_postProcVoting_seats_visualizer(self):
@@ -253,7 +251,6 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         minPercentage = self.driver.find_element(By.CLASS_NAME,"minPercentage").text
         textoMinPercentage="Porcentaje mínimo para tener representación: {}% de los votos totales".format(v.min_percentage_representation)
         self.assertTrue(minPercentage==textoMinPercentage)
-
 
 class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
     def setUp(self):
@@ -313,5 +310,4 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
         Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h2')[0].text
         return self.assertEqual(str(Resultados_text),'Resultados:')
-    
     
