@@ -114,12 +114,21 @@ class CensusView(APIView,TemplateView):
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
    
-@staff_member_required(login_url='/admin/login')
+# @staff_member_required(login_url='/admin/login')
 def export_census(request, voting_id):
+    if not request.user.is_staff:
+        template = loader.get_template('errors.html')
+        context = {
+            'message':"401 You don't have access to this page",
+            'status_code':401,
+        }
+        return HttpResponse(template.render(context, request), status=401)
+
     if list(Voting.objects.filter(id=voting_id).values())== []:
         template = loader.get_template('errors.html')
         context = {
-            'message':'404 Voting not found'
+            'error_message':'404 Voting not found',
+            'status_code':404,
         }
         return HttpResponse(template.render(context, request), status=404)
 

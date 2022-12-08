@@ -223,6 +223,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         self.assertTrue(vEndDate==textoFechaFin)
 
         tipoResultado = self.driver.find_element(By.XPATH,"//table/thead/tr/th[2]").text
+        print(tipoResultado)
         self.assertTrue(tipoResultado=="Puntuación")
     
     def test_postProcVoting_seats_visualizer(self):

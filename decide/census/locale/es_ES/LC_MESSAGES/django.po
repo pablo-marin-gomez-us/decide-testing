@@ -9,7 +9,7 @@ msgstr ""
 "Language: es\n"
 "Last-Translator: Pablo Marin Gomez\n"
 "POT-Creation-Date: 2022-11-19 16:14+0100\n"
-"PO-Revision-Date: 2022-11-23 17:08+0100\n"
+"PO-Revision-Date: 2022-12-08 10:08+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -52,14 +52,18 @@ msgid "username"
 msgstr "Nombre de usuario"
 
 msgid "first_name"
-msgstr "Primer Apellido"
+msgstr "Nombre"
 
 msgid "last_name"
-msgstr "Segundo Apellido"
+msgstr "Apellido"
 
 msgid "voter_id"
 msgstr "ID del votannte"
 
+# Errors
+
+msgid "goBack"
+msgstr "Volver a la lista de votaciones"
 
 
 
