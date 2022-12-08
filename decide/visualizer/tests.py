@@ -5,7 +5,8 @@ from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
+from mixnet.models import Auth
+from django.conf import settings
 from base.tests import BaseTestCase
 
 
@@ -252,3 +253,45 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         minPercentage = self.driver.find_element(By.CLASS_NAME,"minPercentage").text
         textoMinPercentage="Porcentaje mínimo para tener representación: {}% de los votos totales".format(v.min_percentage_representation)
         self.assertTrue(minPercentage==textoMinPercentage)
+
+
+class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        super().setUp()      
+            
+    def tearDown(self):    
+        super().tearDown()
+        self.driver.quit()
+
+        self.base.tearDown()
+
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+
+    def testCheckIDTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        ID_text= self.driver.find_elements(By.TAG_NAME, 'h1')[1].text
+        ID_text = ID_text.split(":")[0]
+        return self.assertEqual(str(ID_text),'ID de la votación')
+    
