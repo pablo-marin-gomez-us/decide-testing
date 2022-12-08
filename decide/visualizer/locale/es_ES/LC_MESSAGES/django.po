@@ -48,7 +48,7 @@ msgid "running"
 msgstr "Votación en curso"
 
 msgid "results"
-msgstr "Resultados:"
+msgstr "Resultados"
 
 msgid "option"
 msgstr "Opción"
@@ -73,3 +73,6 @@ msgstr "Gráfica de porcentaje de representación"
 
 msgid "graph"
 msgstr "Grafica"
+
+msgid "preference"
+msgstr "Preferencia"
