@@ -35,13 +35,13 @@
             <h2 v-if="!voting.start_date">{% trans "nonstarted" %}</h2>
             <h2 v-else-if="!voting.end_date">{% trans "running" %}</h2>
             <div v-else>
-                <h2 class="heading">Resultados:</h2>
+                <h2 class="heading">{% trans "results" %}</h2>
 
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Opción</th>
-                            <th>Preferencia</th>
+                            <th>{% trans "option" %}</th>
+                            <th>{% trans "preference" %}</th>
                         </tr>
                     </thead>
                     <tbody>
