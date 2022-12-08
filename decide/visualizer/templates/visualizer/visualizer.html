@@ -32,8 +32,8 @@
         <div v-if="voting.question.multioption" class="voting container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
 
-            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
+            <h2 v-if="!voting.start_date">{% trans "nonstarted" %}</h2>
+            <h2 v-else-if="!voting.end_date">{% trans "running" %}</h2>
             <div v-else>
                 <h2 class="heading">Resultados:</h2>
 
@@ -61,27 +61,27 @@
                 <h1>{% trans "vID" %}: [[ voting.id ]] </h1>
                 <h1>{% trans "vName" %}: [[ voting.name ]]</h3>
                 
-                <h3>Descripción de la votación: [[ voting.desc ]]</h2>
-                <h4 class="inicio" v-if="voting.start_date">Fecha de inicio de la votación: [[ startDate ]]</h3>
+                <h3>{% trans "desc" %}: [[ voting.desc ]]</h2>
+                <h4 class="inicio" v-if="voting.start_date">{% trans "startDate" %}: [[ startDate ]]</h3>
 
                 <h2 v-if="!voting.start_date">{% trans "nonstarted" %}</h2>
                 <h2 v-else-if="!voting.end_date">{% trans "running" %}</h2>
                 <div v-else>
-                    <h4 class="fin">Fecha de fin de la votación: [[ endDate ]]</h3>
+                    <h4 class="fin">{% trans "endDate" %}: [[ endDate ]]</h3>
                     <br>
                     <h2 class="heading"> {% trans "results" %}</h2>
 
                     <div v-if="voting.seats!=0">
-                        <h3>Número de escaños a repartir: [[ voting.seats ]]</h3>
-                        <h3 class="minPercentage">Porcentaje mínimo para tener representación: [[ voting.min_percentage_representation ]]% de los votos totales</h3>
-                        <p> El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos</p>
+                        <h3>{% trans "seatsNum" %}: [[ voting.seats ]]</h3>
+                        <h3 class="minPercentage">{% trans "minPercentage_1" %}: [[ voting.min_percentage_representation ]]{% trans "minPercentage_2" %}</h3>
+                        <p> {% trans "hontDes" %}</p>
                     </div>
 
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>{% trans "option" %}</th>
-                                <th v-if="voting.seats!=0">Escaños</th>
+                                <th v-if="voting.seats!=0">{% trans "seats" %}</th>
                                 <th v-if="voting.seats==0">{% trans "points" %}</th>
                                 <th>{% trans "votes" %}</th>
                             </tr>
@@ -98,16 +98,16 @@
                 </div>
             </br>
                 <div>
-                    <h2 class="heading">Gráficas de la votación:</h2>  
+                    <h2 id="graphs_title" class="heading">{% trans "graph_info" %}</h2>  
 
                     <div class="chart-container" style="position: relative; height:40vh; width:80vw">
                         
-                            <h5>Grafica 1</h5> 
-                            <canvas id="Graph1"></canvas>
-                            <h5>Grafica 2</h5> 
-                            <canvas id="Graph2"></canvas>
-                            <h5>Grafica 3</h5> 
-                            <canvas id="Graph3"></canvas>
+                        <h5 id="graph_title_1">{% trans "graph_votes" %}</h5>
+                        <canvas id="Graph1"></canvas>
+                        <h5 id="graph_title_2">{% trans "graph_seats" %}</h5>
+                        <canvas id="Graph2"></canvas>
+                        <h5 id="graph_title_3">{% trans "graph_percentage" %}</h5>
+                        <canvas id="Graph3"></canvas>
                         
                     </div>     
                             

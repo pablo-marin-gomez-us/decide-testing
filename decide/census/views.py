@@ -10,15 +10,19 @@ from rest_framework.status import (
         HTTP_204_NO_CONTENT as ST_204,
         HTTP_400_BAD_REQUEST as ST_400,
         HTTP_401_UNAUTHORIZED as ST_401,
+        HTTP_404_NOT_FOUND as ST_404,
         HTTP_409_CONFLICT as ST_409
 )
 from rest_framework.views import APIView
 from base.perms import UserIsStaff
 from .models import Census
+from .forms import AtributosUser
 from django.views.generic import TemplateView
 import csv
 import requests
 from voting.models import Voting
+from  django.contrib.admin.views.decorators import staff_member_required
+from census import census_utils as Utils
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -109,28 +113,49 @@ class CensusView(APIView,TemplateView):
 
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
-        
+   
+# @staff_member_required(login_url='/admin/login')
 def export_census(request, voting_id):
+    if not request.user.is_staff:
+        template = loader.get_template('errors.html')
+        context = {
+            'message':"401 You don't have access to this page",
+            'status_code':401,
+        }
+        return HttpResponse(template.render(context, request), status=401)
+
+    if list(Voting.objects.filter(id=voting_id).values())== []:
+        template = loader.get_template('errors.html')
+        context = {
+            'error_message':'404 Voting not found',
+            'status_code':404,
+        }
+        return HttpResponse(template.render(context, request), status=404)
+
     template = loader.get_template('export_census.html')
+    formulario = AtributosUser()
     voting = Voting.objects.filter(id=voting_id).values()[0]
-    census = Census.objects.filter(voting_id=voting_id).values()
-    voters = []
-    index_list = []
-    index = 0
-    census_text = 'ID,Username,Firstname,Lastname/'
-    
-    for c in census:
-        index_list.append(index)
-        index += 1
-        voter = User.objects.filter(id=c['voter_id']).values()[0]
-        voters.append(voter)
-        census_text += str(c['voter_id']) + ',' + voter['username'] + ',' + voter['first_name'] + ',' + voter['last_name'] + '/'
+    census_text = ''
+    headers = []
+    voters_data = []
+
+    if request.method == 'POST':
+        formulario = AtributosUser(request.POST)
+        if formulario.is_valid():
+            census = Census.objects.filter(voting_id=voting_id).values()
+            data = Utils.get_csvtext_and_data(formulario.cleaned_data['user_atributes'], census)
+            census_text = data[0]
+            headers = data[1]
+            voters_data = data[2]
 
     context = {
+        'formulario':formulario,
         'voting':voting,
-        'census':census,
         'census_text':census_text,
-        'voters':voters,
-        'index':index_list,
+        'voters_data':voters_data,
+        'index':[i for i in range(0,len(voters_data))],
+        'headers':headers,
+        'header_index':[i for i in range(0,len(headers))],
     }
+
     return HttpResponse(template.render(context, request))

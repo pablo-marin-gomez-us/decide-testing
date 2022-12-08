@@ -1,0 +1,75 @@
+# decide visualizer translation
+# This file is distributed under the same license as the main project
+
+# Translators: Francisco Javier Migueles <framigdom@alum.us.es>, 2022
+
+msgid ""
+msgstr ""
+
+"Language: es\n"
+"Last-Translator: Francisco Javier Migueles\n"
+"POT-Creation-Date: 2022-11-19 16:28+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "decide"
+msgstr "Decide"
+
+msgid "desc"
+msgstr "Description of Voting"
+
+msgid "startDate"
+msgstr "Start Date"
+
+msgid "endDate"
+msgstr "End Date"
+
+msgid "seatsNum"
+msgstr "Number of seats to be distributed"
+
+msgid "minPercentage_1"
+msgstr "Minimum percentage for representation"
+
+msgid "minPercentage_2"
+msgstr "% of total votes"
+
+msgid "hontDes"
+msgstr "The calculation of the distribution of seats is based on the D'Hont Law, in which candidates with less than the minimum percentage of total votes required are ignored, and in the event of a tie in the distribution of a seat, it will be given to the candidate with the highest total votes obtained."
+
+msgid "seats"
+msgstr "Seats"
+
+msgid "nonstarted"
+msgstr "Voting not started"
+
+msgid "running"
+msgstr "Voting in progress"
+
+msgid "results"
+msgstr "Results:"
+
+msgid "option"
+msgstr "Option"
+
+msgid "points"
+msgstr "Score"
+
+msgid "votes"
+msgstr "Votes"
+
+msgid "graph_info"
+msgstr "Voting graphs:"
+
+msgid "graph_votes"
+msgstr "Voting graph"
+
+msgid "graph_seats"
+msgstr "Seats graph"
+
+msgid "graph_percentage"
+msgstr "Percentage of representation graph"
+
+msgid "graph"
+msgstr "Graph"
