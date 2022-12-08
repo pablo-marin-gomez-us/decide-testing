@@ -10,6 +10,21 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
+from unittest import mock
+
+from django.contrib.auth import get_user_model, authenticate, login
+from django.contrib.auth.models import AbstractBaseUser
+from django.test import override_settings
+from base.tests import BaseTestCase
+from django.urls import reverse
+from voting.models import Voting, Question, QuestionOption
+from django.utils import timezone
+from mixnet.models import Auth
+from django.conf import settings
+
+from social_django.models import UserSocialAuth
+from social_django.views import get_session_timeout
 
 from base.tests import BaseTestCase
 
@@ -37,6 +52,7 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
 
         v = Voting(name='test voting', question=q)
         v.save()
+
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
         a.save()
@@ -47,6 +63,7 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
 
         self.v_id = v.id
         return v.id
+
     def testCheckIDTransES(self):
         self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
@@ -82,6 +99,76 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
         login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
-
         return self.assertEqual(login,"Identificarse con GitHub")  
-        
+
+
+@override_settings(SOCIAL_AUTH_GITHUB_KEY='1',
+                   SOCIAL_AUTH_GITHUB_SECRET='2')
+class TestViews(StaticLiveServerTestCase):
+
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        super().setUp()    
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        super().tearDown()
+        self.voting = None
+
+    def login_admin(self):
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").click()
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".submit-row > input").click()
+
+    def create_voting(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+
+    def test_backend_exists(self):
+        response = self.client.get(reverse('social:begin', kwargs={'backend': 'github'}))
+        self.assertEqual(response.status_code, 302)
+
+    def test_backend_not_exists(self):
+        url = reverse('social:begin', kwargs={'backend': 'blabla'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_not_logged_booth_view(self):
+        v = self.create_voting()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(v))
+        try:
+            githubButton = self.driver.find_element_by_xpath("//a[@id='githubButton']")
+            assert True
+        except NoSuchElementException:
+            assert False
+
+    def test_admin_logged_booth_view(self):
+        v = self.create_voting()
+        self.login_admin()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(v))
+        try:
+            githubButton = self.driver.find_element_by_xpath("//a[@id='githubButton']")
+            assert False
+        except NoSuchElementException:
+            assert True
