@@ -29,77 +29,77 @@ from social_django.views import get_session_timeout
 from base.tests import BaseTestCase
 
 
-# class BoothTranslationTestCase(StaticLiveServerTestCase):
+class BoothTranslationTestCase(StaticLiveServerTestCase):
 
-#     def setUp(self):
-#         self.base = BaseTestCase()
-#         self.base.setUp()
-#         super().setUp()    
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        super().setUp()    
 
-#         options = webdriver.ChromeOptions()
-#         options.headless = True
-#         self.driver = webdriver.Chrome(options=options)
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
     
 
-#     def tearDown(self):           
-#         super().tearDown()
-#         self.driver.quit()
-#         self.base.tearDown()
+    def tearDown(self):           
+        super().tearDown()
+        self.driver.quit()
+        self.base.tearDown()
 
-#     def crear_votacion(self):
-#         q = Question(desc = 'test question')
-#         q.save()
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
 
-#         v = Voting(name='test voting', question=q)
-#         v.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
 
-#         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-#                                           defaults={'me': True, 'name': 'test auth'})
-#         a.save()
-#         v.auths.add(a)
-#         v.create_pubkey()
-#         v.start_date = timezone.now()
-#         v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
 
-#         self.v_id = v.id
-#         return v.id
+        self.v_id = v.id
+        return v.id
 
-#     def testCheckIDTransES(self):
-#         self.crear_votacion()
-#         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
-#         title = self.driver.find_elements(By.TAG_NAME, 'h1')[1].text
-#         title = title.split(": ")[0]   
-#         return self.assertEqual(str(title),'ID de la votación')
+    def testCheckIDTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        title = self.driver.find_elements(By.TAG_NAME, 'h1')[1].text
+        title = title.split(": ")[0]   
+        return self.assertEqual(str(title),'ID de la votación')
 
-#     def testCheckNombreTransES(self):
-#         self.crear_votacion()
-#         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
-#         sub_title = self.driver.find_element(By.TAG_NAME, 'h3').text
-#         sub_title = sub_title.split(": ")[0]      
-#         return self.assertEqual(str(sub_title),'Nombre de la votación')
+    def testCheckNombreTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        sub_title = self.driver.find_element(By.TAG_NAME, 'h3').text
+        sub_title = sub_title.split(": ")[0]      
+        return self.assertEqual(str(sub_title),'Nombre de la votación')
 
-#     def testCheckInputsTransES(self):
-#         self.crear_votacion()
-#         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
-#         inputs = [element.text for element in self.driver.find_elements(By.TAG_NAME, 'label')]
+    def testCheckInputsTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        inputs = [element.text for element in self.driver.find_elements(By.TAG_NAME, 'label')]
         
-#         username, password = inputs[0], inputs[1]
-#         local_check = self.assertEqual(username,"Nombre de usuario")  
-#         local_check = local_check and self.assertEqual(password,"Contraseña") 
-#         return local_check
+        username, password = inputs[0], inputs[1]
+        local_check = self.assertEqual(username,"Nombre de usuario")  
+        local_check = local_check and self.assertEqual(password,"Contraseña") 
+        return local_check
     
-#     def testCheckLoginTransES(self):
-#         self.crear_votacion()
-#         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
-#         login = self.driver.find_element(By.TAG_NAME, 'button').text
+    def testCheckLoginTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        login = self.driver.find_element(By.TAG_NAME, 'button').text
 
-#         return self.assertEqual(login,"Identificarse")
+        return self.assertEqual(login,"Identificarse")
 
-#     def testCheckGitHubTransES(self):
-#         self.crear_votacion()
-#         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
-#         login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
-#         return self.assertEqual(login,"Identificarse con GitHub")  
+    def testCheckGitHubTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
+        return self.assertEqual(login,"Identificarse con GitHub")  
 
 
 @override_settings(SOCIAL_AUTH_GITHUB_KEY='1',
