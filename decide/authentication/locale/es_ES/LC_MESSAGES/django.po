@@ -14,11 +14,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "saludo"
-msgstr "Hola"
-
-msgid "botonRegistrar"
-msgstr "Por favor, haga click en el enlace a continuación para confirmar el registro."
 
 msgid "registrar"
 msgstr "Registro"
