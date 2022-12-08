@@ -1,7 +1,12 @@
 {% autoescape off %}
 Hi {{ user.username }},
+Welcome to Decide Villanueva del Trabuco.
+Before you can vote in our system or use Decide, we need you to activate your account.
 
 Please click on the link below to confirm your registration:
 
 {{protocol}}://{{domain}}{% url 'activate' uidb64=uid token=token %}
+
+We hope you enjoy your time using Decide Villanueva del Trbuco.
+If you have any suggestion to improve our web, send an e-mail to this account with the subject: BetterDecide!.
 {% endautoescape %}
