@@ -63,6 +63,9 @@ msgstr "Voter ID"
 msgid "select_atr"
 msgstr "Select the attribute:"
 
+msgid "goBack"
+msgstr "Go back to the voting list"
+
 
 
 
