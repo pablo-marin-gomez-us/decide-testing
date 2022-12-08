@@ -288,10 +288,30 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         self.v_id = v.id
         return v.id
 
+    def detener_votacion(self):
+        v = Voting.objects.get(id=self.v_id)
+        v.end_date = timezone.now()
+        v.save()
+
     def testCheckIDTransES(self):
         self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
         ID_text= self.driver.find_elements(By.TAG_NAME, 'h1')[1].text
         ID_text = ID_text.split(":")[0]
         return self.assertEqual(str(ID_text),'ID de la votación')
+
+    def testCheckNombreTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Nombre_text= self.driver.find_elements(By.TAG_NAME, 'h1')[2].text
+        Nombre_text = Nombre_text.split(":")[0]
+        return self.assertEqual(str(Nombre_text),'Nombre de la votación')
+
+    def testCheckResultadosTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h2')[0].text
+        return self.assertEqual(str(Resultados_text),'Resultados:')
+    
     
