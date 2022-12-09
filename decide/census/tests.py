@@ -113,7 +113,7 @@ class ExportCensusTestCase(BaseTestCase):
         selected_atributes = ['id']
         voters_data = []
 
-        census = Census.objects.filter(voting_id=1).values()
+        census = Census.objects.filter(voting_id=self.v.id).values()
         user_atributes = censusUtils.get_user_atributes()
         data = censusUtils.get_csvtext_and_data(form_values, census)
 
@@ -138,6 +138,12 @@ class ExportCensusTestCase(BaseTestCase):
         self.client.force_login(self.user_admin)
         response = self.client.get('/census/export/{}/'.format(1), format='json')
         self.assertEqual(response.status_code, 200)
+    
+    def test_voting_not_found(self):
+        self.client.force_login(self.user_admin)
+        voting_id = int(self.v.id) + 1
+        response = self.client.get('/census/export/{}/'.format(voting_id), format='json')
+        self.assertEqual(response.status_code, 404)
 
 class ExportCensusTransTestCase(StaticLiveServerTestCase):
 
@@ -191,3 +197,4 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
         title = self.driver.find_element(By.TAG_NAME, 'h1').text
         title = title.split(": ")[0]
         return self.assertEqual(str(title),'Nombre de la votación')
+
