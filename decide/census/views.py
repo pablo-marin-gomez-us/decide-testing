@@ -113,8 +113,7 @@ class CensusView(APIView,TemplateView):
 
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
-   
-# @staff_member_required(login_url='/admin/login')
+
 def export_census(request, voting_id):
     if not request.user.is_staff:
         template = loader.get_template('errors.html')

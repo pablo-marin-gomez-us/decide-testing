@@ -1,12 +1,15 @@
 import random
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, Client
 from rest_framework.test import APIClient
-from voting.models import Voting
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
 from census import census_utils as censusUtils
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from django.utils import timezone
+from voting.models import Voting, Question, QuestionOption
 
 
 class CensusTestCase(BaseTestCase):
@@ -80,8 +83,24 @@ class ExportCensusTestCase(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.voter_id = User.objects.all().values()[0]['id']
-        self.census = Census(voting_id=1, voter_id=self.voter_id)
+        self.create_voting()
+        self.census = Census(voting_id=self.v.id, voter_id=self.voter_id)
         self.census.save()
+        self.user_admin = User.objects.filter(username='admin').all()[0]
+        self.user_noadmin = User.objects.filter(username='noadmin').all()[0]
+
+    def create_voting(self):
+        q = Question(desc="Descripcion")
+        q.save()
+
+        opt1 = QuestionOption(question=q,option="opcion1")
+        opt1.save()
+        opt2 = QuestionOption(question=q,option="opcion2")
+        opt2.save()
+
+        self.v = Voting(name="Votacion", question=q)
+
+        self.v.save()
 
     def tearDown(self):
         super().tearDown()
@@ -109,6 +128,11 @@ class ExportCensusTestCase(BaseTestCase):
         self.assertEquals(voters_data, data[2]) # atributes values
 
     def test_access_denied(self):
-        self.login(user='admin')
-        response = self.client.get('/census/export/{}/'.format(1), format='json')
+        self.client.force_login(self.user_noadmin)
+        response = self.client.get('/census/export/{}/'.format(self.v.id))
         self.assertEqual(response.status_code, 401)
+
+    def test_access_accepted(self):
+        self.client.force_login(self.user_admin)
+        response = self.client.get('/census/export/{}/'.format(1), format='json')
+        self.assertEqual(response.status_code, 200)
