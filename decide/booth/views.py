@@ -21,7 +21,6 @@ class BoothView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
-
             # Casting numbers to string to manage in javascript with BigInt
             # and avoid problems with js and big number conversion
             for k, v in r[0]['pub_key'].items():
@@ -39,7 +38,6 @@ class BoothView(TemplateView):
             user.set_password(password)
             user.save()
 
-
         return context
 
 def list_votings(request):
@@ -49,3 +47,4 @@ def list_votings(request):
     'votings': votings
   }
   return HttpResponse(template.render(context, request))
+

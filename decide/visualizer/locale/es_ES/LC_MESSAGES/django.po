@@ -56,6 +56,9 @@ msgstr "Opción"
 msgid "points"
 msgstr "Puntuación"
 
+msgid "preference"
+msgstr "Preferences"
+
 msgid "votes"
 msgstr "Votos"
 
@@ -73,3 +76,6 @@ msgstr "Gráfica de porcentaje de representación"
 
 msgid "graph"
 msgstr "Grafica"
+
+msgid "preference"
+msgstr "Preferencia"

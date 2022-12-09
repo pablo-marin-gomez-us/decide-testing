@@ -6,11 +6,13 @@ from .models import Census
 from base import mods
 from base.tests import BaseTestCase
 from census import census_utils as censusUtils
+from django.conf import settings
 from selenium import webdriver
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.by import By
 from django.utils import timezone
 from voting.models import Voting, Question, QuestionOption
-
+from mixnet.models import Auth
 
 class CensusTestCase(BaseTestCase):
 
@@ -136,3 +138,56 @@ class ExportCensusTestCase(BaseTestCase):
         self.client.force_login(self.user_admin)
         response = self.client.get('/census/export/{}/'.format(1), format='json')
         self.assertEqual(response.status_code, 200)
+
+class ExportCensusTransTestCase(StaticLiveServerTestCase):
+
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        super().setUp()
+        self.voter_id = User.objects.all().values()[0]['id']
+        self.crear_votacion()
+        self.census = Census(voting_id=self.v_id, voter_id=self.voter_id)
+        self.census.save()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+    
+
+    def tearDown(self):           
+        super().tearDown()
+        self.driver.quit()
+        self.base.tearDown()
+
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+
+    def login_admin(self):
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").click()
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".submit-row > input").click()
+
+    def testCheckExportName(self):
+        self.login_admin()
+        self.driver.get(f'{self.live_server_url}/census/export/{self.v_id}')
+        title = self.driver.find_element(By.TAG_NAME, 'h1').text
+        title = title.split(": ")[0]
+        return self.assertEqual(str(title),'Nombre de la votación')

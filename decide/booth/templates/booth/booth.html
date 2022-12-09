@@ -55,7 +55,7 @@
             <!--LOGIN CON GITHUB-->
 
             {% if not user.is_authenticated and not user.is_staff %}
-            <a href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
+            <a id='githubButton' href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
                 <span>{% trans "LoginGitHub" %}</span>
             </a>
             {% elif not user.is_staff %}
@@ -68,18 +68,30 @@
 
             <!-- Voting -->
             <div v-if="!signup">
-                <h2>[[ voting.question.desc ]]</h2>
-                <b-form-group v-for="opt in voting.question.options" :key="opt.number">
-                    <b-form-radio v-model="selected"
-                                  :id="'q' + opt.number"
-                                  name="question"
-                                  :value="opt.number">
-                        [[ opt.option ]]
-                    </b-form-radio>
-                </b-form-group>
-                <b-button type="button" variant="primary" v-on:click="decideSend">
-                    {% trans "Vote" %}
-                </b-button>
+                <div v-if="!voting.question.multioption">
+                    <h2>[[ voting.question.desc ]]</h2>
+                    <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+                        <b-form-radio v-model="selected"
+                                    :id="'q' + opt.number"
+                                    name="question"
+                                    :value="opt.number">
+                            [[ opt.option ]]
+                        </b-form-radio>
+                    </b-form-group>
+                    <b-button type="button" variant="primary" v-on:click="decideSend">
+                        {% trans "Vote" %}
+                    </b-button>
+                </div>
+                <div v-if="voting.question.multioption">
+                    <h2>[[ voting.question.desc ]]</h2>
+                    <b-form-group v-for="opt,i in voting.question.options" :key="opt.number">
+                        {% trans "Question number " %}[[i+1]] : [[opt.option]]
+                    </b-form-group>
+                    <b-form-input v-model="order" placeholder="Enter priority for this questions. Example: 123. That means option 1 has more priority than 2 and that 3" required></b-form-input>
+                    <b-button type="button" variant="primary" v-on:click="decideSendMultioption">
+                        {% trans "Vote" %}
+                    </b-button>
+                </div>
             </div>
         </div>
     </div>
@@ -201,6 +213,11 @@
                     var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
                     return cipher;
                 },
+                decideEncryptMultioption() {
+                    var bigmsg = BigInt.fromJSONObject(this.order.toString());
+                    var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
+                    return cipher;
+                },
                 decideSend(evt) {
                     evt.preventDefault();
                     var v = this.decideEncrypt();
@@ -213,6 +230,46 @@
                     this.postData("{% url "gateway" "store" "/" %}", data)
                         .then(data => {
                             this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
+                },
+                decideSendMultioption(evt) {
+                    if (this.order.toString().length < this.voting.question.options.length || this.order.toString().length == null) {
+                        this.showAlert("danger", '{% trans "Please input the order of your selection (remember that the input must be a sequence of all question numbers at your preferred order" %}');
+                        return;
+                    } else if (this.order.toString().length > this.voting.question.options.length) {
+                        this.showAlert("danger", '{% trans "Please input the order of your selection (You introduce too much values" %}');
+                        return;
+                    }
+
+                    function checkIfDuplicateExists(arr) {
+                        return new Set(arr).size !== arr.length
+                    }
+
+                    for (var i = 0; i < this.order.toString().length; i++) {
+                        if (this.order.toString().charAt(i) > this.voting.question.options.length || this.order.toString().charAt(i) <= 0) {
+                            this.showAlert("danger", '{% trans "Invalid Values (You introduced selection that contain invalid question number)" %}');
+                            return;
+                        }
+                    }
+                    var duplicates = checkIfDuplicateExists(this.order.toString())
+                    if (duplicates) {
+                        this.showAlert("danger", '{% trans "Duplicated Values (the preferred order must not use duplicated question numbers)" %}');
+                        return;
+                    }
+                    evt.preventDefault();
+                    var v = this.decideEncryptMultioption();
+                    var data = {
+                        vote: {a: v.alpha.toString(), b: v.beta.toString()},
+                        voting: this.voting.id,
+                        voter: this.user.id,
+                        token: this.token
+                    }
+                    this.postData("{% url "gateway" "store" "/" %}", data)
+                        .then(data => {
+                            this.showAlert("success", '{% trans "Conglatulations. Your selection has been sent" %}');
                         })
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
