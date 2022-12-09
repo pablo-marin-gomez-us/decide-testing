@@ -102,7 +102,7 @@ class VotingPriorityModelTestCase(BaseTestCase):
         self.assertEqual(v.question.options.all()[0].option,'Primera Opción')
         self.assertEqual(v.question.options.all()[1].option,'Segunda Opción')
         self.assertEqual(v.question.options.all()[2].option,'Tercera Opción')
-        self.assertEqual(len(v.question.options.all()),3)        
+        self.assertEqual(len(v.question.options.all()),3)
         self.assertEqual(v.question.multioption,True)
     
     def test_create_votingAPI(self):
@@ -118,7 +118,7 @@ class VotingPriorityModelTestCase(BaseTestCase):
 
         voting = Voting.objects.get(name='Example')
         self.assertEqual(voting.desc,'Description example')
-        self.assertEqual(voting.question.multioption,False)    
+        self.assertEqual(voting.question.multioption,False)
 
 class VotingTestCase(BaseTestCase):
 
