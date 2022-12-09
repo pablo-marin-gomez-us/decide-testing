@@ -56,9 +56,6 @@ msgstr "Opción"
 msgid "points"
 msgstr "Puntuación"
 
-msgid "preference"
-msgstr "Preferences"
-
 msgid "votes"
 msgstr "Votos"
 
