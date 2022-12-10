@@ -133,10 +133,10 @@ WSGI_APPLICATION = 'decide.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'decide',
+        'NAME': 'decide_mnde',
         'USER': 'decide',
-        'PASSWORD': 'decide',
-        'HOST': 'localhost',
+        'PASSWORD': 'b8RNZFlnCxaQFVOt4kcpFqB8yK0rv6m5',
+        'HOST': 'postgres://decide:b8RNZFlnCxaQFVOt4kcpFqB8yK0rv6m5@dpg-cea8rjarrk0bbtbifglg-a.frankfurt-postgres.render.com/decide_mnde',
         'PORT': '5432',
     }
 }
