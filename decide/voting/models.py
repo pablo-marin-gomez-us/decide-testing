@@ -25,6 +25,7 @@ class RangeIntegerField(models.IntegerField):
 
 class Question(models.Model):
     desc = models.TextField()
+    multioption = models.BooleanField(default=False)
 
     def __str__(self):
         return self.desc
@@ -190,17 +191,22 @@ class Voting(models.Model):
         seats = self.seats
         min_percentage_representation = self.min_percentage_representation
 
-        #Si hay 0 escaños por repartir, el procesado de los datos se hace de forma normal
-        if seats==0:
+        if self.question.multioption:
             opts = []
-            for opt in options:
-                if isinstance(tally, list):
-                    votes = tally.count(opt.number)
+            for optIndex in enumerate(options):
+                votes = 0
+                if isinstance(tally,list):
+                    for vote in tally:
+                        vote = [int(x) for x in str(vote)]
+                        if votes == 0:
+                            votes = vote.index(optIndex[0]+1)
+                        else:
+                            votes = votes + vote.index(optIndex[0]+1)
                 else:
                     votes = 0
                 opts.append({
-                    'option': opt.option,
-                    'number': opt.number,
+                    'option': optIndex[1].option,
+                    'number': optIndex[1].number,
                     'votes': votes
                 })
 
@@ -209,37 +215,57 @@ class Voting(models.Model):
 
             self.postproc = postp
             self.save()
-        
-        #Si hay escaños por repartir, el procesado de los datos se hace con la ley d'Hont
         else:
-            #Hacemos el recuento de votos de todas las opciones
-            opts = []
-            for opt in options:
-                if isinstance(tally, list):
-                    votes = tally.count(opt.number)
-                else:
-                    votes = 0
-                opts.append({
-                    'option': opt.option,
-                    'number': opt.number,
-                    'votes': votes
-                })
+            #Si hay 0 escaños por repartir, el procesado de los datos se hace de forma normal
+            if seats==0:
+                opts = []
+                for opt in options:
+                    if isinstance(tally, list):
+                        votes = tally.count(opt.number)
+                    else:
+                        votes = 0
+                    opts.append({
+                        'option': opt.option,
+                        'number': opt.number,
+                        'votes': votes
+                    })
 
-            #Ahora con todos los votos contados hacemos el reparto de escaños
-            dicc_options_votes={}
-            for opt in opts:
-                dicc_options_votes[opt['option']]=opt['votes']
-            escaños_partidos=Voting.hont(dicc_options_votes, seats, min_percentage_representation)
+                data = { 'type': 'IDENTITY', 'options': opts }
+                postp = mods.post('postproc', json=data)
+
+                self.postproc = postp
+                self.save()
+
+            #Si hay escaños por repartir, el procesado de los datos se hace con la ley d'Hont
+            else:
+                #Hacemos el recuento de votos de todas las opciones
+                opts = []
+                for opt in options:
+                    if isinstance(tally, list):
+                        votes = tally.count(opt.number)
+                    else:
+                        votes = 0
+                    opts.append({
+                        'option': opt.option,
+                        'number': opt.number,
+                        'votes': votes
+                    })
+
+                #Ahora con todos los votos contados hacemos el reparto de escaños
+                dicc_options_votes={}
+                for opt in opts:
+                    dicc_options_votes[opt['option']]=opt['votes']
+                escaños_partidos=Voting.hont(dicc_options_votes, seats, min_percentage_representation)
+                
+                #Una vez calculados los escaños de cada partido, se añaden a la lista de opciones
+                for opt in opts:
+                    opt['seats']=escaños_partidos[opt['option']]
+
+                data = { 'type': 'IDENTITY', 'options': opts }
+                postp = mods.post('postproc', json=data)
+                print(postp)
+                self.postproc = postp
+                self.save()
             
-            #Una vez calculados los escaños de cada partido, se añaden a la lista de opciones
-            for opt in opts:
-                opt['seats']=escaños_partidos[opt['option']]
-
-            data = { 'type': 'IDENTITY', 'options': opts }
-            postp = mods.post('postproc', json=data)
-            print(postp)
-            self.postproc = postp
-            self.save()
-
     def __str__(self):
         return self.name

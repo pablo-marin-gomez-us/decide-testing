@@ -1,14 +1,14 @@
 # decide booth translation
 # This file is distributed under the same license as the main project
 
-# Translators: Pablo Marin Gomez <pabmargom3@alum.us.es>, 2022
+# Translators: Francisco Javier Migueles <framigdom@alum.us.es>, 2022
 
 msgid ""
 msgstr ""
 
-"Language: es\n"
-"Last-Translator: Pablo Marin Gomez\n"
-"POT-Creation-Date: 2022-11-19 16:00+0100\n"
+"Language: en\n"
+"Last-Translator: Francisco Javier Migueles\n"
+"POT-Creation-Date: 2022-12-01 18:00+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,57 +20,57 @@ msgid "decide"
 msgstr "Decide"
 
 msgid "logout"
-msgstr "Salir"
+msgstr "Logout"
 
 msgid "vID"
-msgstr "ID de la votación"
+msgstr "ID of Vote"
 
 msgid "vName"
-msgstr "Nombre de la votación"
+msgstr "Name of voting"
 
 msgid "Login"
-msgstr "Identificarse"
+msgstr "Login"
 
 msgid "LoginGitHub"
-msgstr "Identificarse con GitHub"
+msgstr "Login with GitHub"
 
 msgid "LoginFacebook"
-msgstr "Identificarse con Facebook"
+msgstr "Login with Facebook"
 
 msgid "Vote"
-msgstr "Votar"
+msgstr "Vote"
 
 msgid "Error"
 msgstr "Error"
 
 msgid "Conglatulations. Your vote has been sent"
-msgstr "¡Enhorabuena! Tu voto se ha enviado"
+msgstr "Conglatulations. Your vote has been sent"
 
 msgid "registered_as_1"
-msgstr "Registrado en "
+msgstr "You are registered "
 
 msgid "registered_as_2"
-msgstr " como "
+msgstr " as "
 
 msgid "vote_with"
-msgstr "Votar como"
+msgstr "You have voted with"
 
 # Votings
 
 msgid "voting"
-msgstr "Votación"
+msgstr "Voting"
 
 msgid "link_voting"
-msgstr "Enlace a la votación"
+msgstr "Link to voting"
 
 msgid "link_census"
-msgstr "Enlace al censo"
+msgstr "Link to census"
 
 msgid "booth_voting"
-msgstr "Booth votación "
+msgstr "Booth to voting"
 
 msgid "closed_voting"
-msgstr "Votación cerrada"
+msgstr "Voting closed"
 
 msgid "voting_census"
-msgstr "Censo votación "
+msgstr "Census of voting"
