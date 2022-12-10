@@ -2,16 +2,12 @@ from voting.models import Voting, Question, QuestionOption
 from store.models import Vote
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import timezone
-from django.contrib.auth.models import User
-from mixnet.mixcrypt import ElGamal
-from mixnet.mixcrypt import MixCrypt
 from base import mods
 from rest_framework.test import APIClient
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
 from mixnet.models import Auth
 from django.conf import settings
 from base.tests import BaseTestCase
@@ -314,7 +310,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
 
         self.login()
         v.end_date = timezone.now()
-        v.tally_votes(self.token)     
+        v.tally_votes(self.token)
 
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         votingResults = self.driver.find_element(By.TAG_NAME, 'h2').text
