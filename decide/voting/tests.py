@@ -105,6 +105,14 @@ class VotingPriorityModelTestCase(BaseTestCase):
         self.assertEqual(len(v.question.options.all()),3)
         self.assertEqual(v.question.multioption,True)
     
+    def testChanginPriority(self):
+        v = Voting.objects.get(name="Votacion con Prioridad")
+        v.question.multioption=False
+        self.v.save()
+        self.assertEqual(v.question.multioption, False)
+        self.assertEqual(v.seats, 0)
+        self.assertEqual(v.min_percentage_representation, 5)
+    
     def test_create_votingAPI(self):
         self.login()
         data = {
