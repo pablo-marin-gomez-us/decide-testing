@@ -136,7 +136,7 @@ DATABASES = {
         'NAME': 'decide_mnde',
         'USER': 'decide',
         'PASSWORD': 'b8RNZFlnCxaQFVOt4kcpFqB8yK0rv6m5',
-        'HOST': 'decide:b8RNZFlnCxaQFVOt4kcpFqB8yK0rv6m5@dpg-cea8rjarrk0bbtbifglg-a.frankfurt-postgres.render.com',
+        'HOST': 'b8RNZFlnCxaQFVOt4kcpFqB8yK0rv6m5@dpg-cea8rjarrk0bbtbifglg-a.frankfurt-postgres.render.com',
         'PORT': '5432',
     }
 }
