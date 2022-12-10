@@ -12,30 +12,34 @@ MODULES = [
     'visualizer',
     'voting',
 ]
+BASEURL = 'https://decide-qvzx.onrender.com'
 
 APIS = {
-    'authentication': 'http://10.5.0.1:8000',
-    'base': 'http://10.5.0.1:8000',
-    'booth': 'http://10.5.0.1:8000',
-    'census': 'http://10.5.0.1:8000',
-    'mixnet': 'http://10.5.0.1:8000',
-    'postproc': 'http://10.5.0.1:8000',
-    'store': 'http://10.5.0.1:8000',
-    'visualizer': 'http://10.5.0.1:8000',
-    'voting': 'http://10.5.0.1:8000',
+    'authentication': BASEURL,
+    'base': BASEURL,
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,
 }
 
-BASEURL = 'http://10.5.0.1:8000'
+
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'db',
+        'NAME': 'decide_mnde_azm2',
+        'USER': 'decide',
+        'HOST': 'dpg-ceaahp2rrk0bbtbpfdqg-a.frankfurt-postgres.render.com',
         'PORT': '5432',
+        'PASSWORD':'2wKeyTjR1yVNmHfB8daRTMVISv9iNlnu'
     }
 }
+
+
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
