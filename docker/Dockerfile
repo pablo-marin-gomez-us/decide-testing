@@ -13,10 +13,12 @@ WORKDIR /app
 RUN git clone https://github.com/Villanueva-del-Trabuco-EGC/decide.git .
 RUN pip install -r requirements.txt
 
-WORKDIR /app/decide
+WORKDIR /app/docker
 
 # local settings.py
 ADD docker-settings.py /app/decide/local_settings.py
+
+WORKDIR /app/decide
 
 RUN ./manage.py collectstatic
 
