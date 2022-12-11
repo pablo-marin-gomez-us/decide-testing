@@ -1,6 +1,9 @@
-from voting.models import Voting, Question
+from voting.models import Voting, Question, QuestionOption
+from store.models import Vote
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import timezone
+from base import mods
+from rest_framework.test import APIClient
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -251,6 +254,86 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         minPercentage = self.driver.find_element(By.CLASS_NAME,"minPercentage").text
         textoMinPercentage="Porcentaje mínimo para tener representación: {}% de los votos totales".format(v.min_percentage_representation)
         self.assertTrue(minPercentage==textoMinPercentage)
+
+    def create_priority_votation(self):
+        q = Question(desc = 'test priority question', multioption=True)
+        q.save()
+        opt = QuestionOption(question = q, number = 1, option = "Priority Option")
+        opt.save()
+
+        v = Voting(name='test priority voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                            defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+
+    def stop_priority_votation(self):
+        v = Voting.objects.get(id=self.v_id)
+        v.end_date = timezone.now()
+        v.save()
+
+    def test_create_priority_vote(self):
+        vId = self.create_priority_votation()
+        vote = Vote(voting_id = vId, voter_id = 99, a = 12, b = 12)
+        vote.save()
+        self.stop_priority_votation()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{vId}/')
+
+        print(self.driver.page_source)
+        #Si la votación es de tipo prioridad, no existen los "Escaños"
+        self.assertFalse(self.driver.find_element(By.TAG_NAME,"h1").text == "Escaños")
+
+    def test_voting_priority(self):
+        p = Question(desc='test question priority', multioption=True)
+        p.save()
+        for i in range(5):
+            opt = QuestionOption(question=p, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting priority', question=p)
+        v.save()
+
+        auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        auth.save()
+        v.auths.add(auth)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.login()
+        v.end_date = timezone.now()
+        v.tally_votes(self.token)
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        votingResults = self.driver.find_element(By.TAG_NAME, 'h2').text
+        textResults = "Resultados:"
+        self.assertEqual(votingResults,textResults)
+        votingFirstResult = self.driver.find_element(By.XPATH,"//table/tbody/tr/th").text
+        textVotingFirstResult = "option 1"
+        self.assertEqual(votingFirstResult,textVotingFirstResult)
+        votingFirstResultTd = self.driver.find_element(By.XPATH,"//table/tbody/tr/td").text
+        textvotingFirstResultTd = "1º"
+        self.assertEqual(votingFirstResultTd,textvotingFirstResultTd)
+
+    def login(self, user='admin', password='qwerty'):
+        self.client = APIClient()
+        self.token = None
+        mods.mock_query(self.client)
+
+        data = {'username': user, 'password': password}
+        response = mods.post('authentication/login', json=data, response=True)
+        self.assertEqual(response.status_code, 200)
+        self.token = response.json().get('token')
+        self.assertTrue(self.token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
 
 class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
     def setUp(self):
