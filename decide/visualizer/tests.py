@@ -55,8 +55,8 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         v.save()
 
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graphs_title').text
-        self.assertEqual(title_text,'Gráficas de la votación:')
+        title_text = self.driver.find_element(By.ID,'graphs_title').is_displayed()
+        self.assertTrue(title_text)
     
     def test_graph_title_1_exist(self):
 
@@ -67,8 +67,8 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         v.save()
 
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graph_title_1').text
-        self.assertEqual(title_text,'Gráfica de votos')
+        title_text = self.driver.find_element(By.ID,'graph_title_1').is_displayed()
+        self.assertTrue(title_text)
 
     def test_graph_title_2_exist(self):
 
@@ -79,8 +79,8 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         v.save()
 
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graph_title_2').text
-        self.assertEqual(title_text,'Gráfica de escaños')
+        title_text = self.driver.find_element(By.ID,'graph_title_2').is_displayed()
+        self.assertTrue(title_text)
         
     def test_graph_title_3_exist(self):
 
@@ -91,8 +91,8 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         v.save()
 
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graph_title_3').text
-        self.assertEqual(title_text,'Gráfica de porcentaje de representación')
+        title_text = self.driver.find_element(By.ID,'graph_title_3').is_displayed()
+        self.assertTrue(title_text)
 
     def test_graph_canvas_1_exist(self):
 
@@ -280,9 +280,12 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         v.auths.add(a)
         v.create_pubkey()
         v.start_date = timezone.now()
+        v.seats = 3
+        v.min_percentage_representation=5
         v.save()
 
         self.v_id = v.id
+        self.voting = v
         return v.id
 
     def detener_votacion(self):
@@ -310,4 +313,71 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
         Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h2')[0].text
         return self.assertEqual(str(Resultados_text),'Resultados:')
+
+    def testCheckFechaInicioTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h4')[0].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Fecha de inicio de la votación')
+
+    def testCheckFechaFinTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h4')[1].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Fecha de fin de la votación')
+
+    def testCheckEscañosTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h3')[1].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Número de escaños a repartir')
+
+    def testCheckMinPercentageTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h3')[2].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Porcentaje mínimo para tener representación')
+
+    def testCheckHontDesTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'p')[0].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),"El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos")
+
+    def testCheckTituloGraficasTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graphs_title').text
+        self.assertEqual(title_text,'Gráficas de la votación:')
     
+    def testCheckTituloGraficas1TransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graph_title_1').text
+        self.assertEqual(title_text,'Gráfica de votos')
+
+    def testCheckTituloGraficas2TransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graph_title_2').text
+        self.assertEqual(title_text,'Gráfica de escaños')
+        
+    def testCheckTituloGraficas3TransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graph_title_3').text
+        self.assertEqual(title_text,'Gráfica de porcentaje de representación')
