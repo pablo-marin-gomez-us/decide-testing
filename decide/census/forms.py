@@ -2,7 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 
 class AtributosUser(forms.Form):
-    user = User.objects.all().values()[0]
+    user = []
+    if len(User.objects.all().values())>0:
+        user = User.objects.all().values()[0]
     atributes_list = []
 
     counter = 0
