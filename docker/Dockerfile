@@ -13,10 +13,13 @@ WORKDIR /app
 RUN git clone https://github.com/Villanueva-del-Trabuco-EGC/decide.git .
 RUN pip install -r requirements.txt
 
-WORKDIR /app/decide
+WORKDIR /app/docker
 
 # local settings.py
 ADD docker-settings.py /app/decide/local_settings.py
+ADD ../decide/.env /app/decide/.env
+
+WORKDIR /app/decide
 
 RUN django-admin makemessages
 RUN django-admin compilemessages
