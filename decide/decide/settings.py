@@ -1,3 +1,5 @@
+import os
+
 """
 Django settings for decide project.
 
@@ -91,7 +93,7 @@ EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
 EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo' #Arreglar en la versión final #os.getenv('PASSWORD') también puede hacerse en un archivo aparte
 PASSWORD_RESET_TIMEOUT = 14400
 
-BASEURL = 'http://localhost:8000'
+BASEURL = os.environ.get('baseurl')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -135,8 +137,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'decide_mnde_azm2',
         'USER': 'decide',
-        'PASSWORD': '2wKeyTjR1yVNmHfB8daRTMVISv9iNlnu',
-        'HOST': 'dpg-ceaahp2rrk0bbtbpfdqg-a.frankfurt-postgres.render.com',
+        'PASSWORD': os.environ.get('password'),
+        
+        'HOST': os.environ.get('host'),
         'PORT': '5432',
     }
 }

@@ -1,3 +1,5 @@
+import os
+
 ALLOWED_HOSTS = ["*"]
 
 # Modules in use, commented modules that you won't use
@@ -12,7 +14,7 @@ MODULES = [
     'visualizer',
     'voting',
 ]
-BASEURL = 'https://decide-qvzx.onrender.com'
+BASEURL = os.environ.get('baseurl')
 
 APIS = {
     'authentication': BASEURL,
@@ -33,9 +35,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'decide_mnde_azm2',
         'USER': 'decide',
-        'HOST': 'dpg-ceaahp2rrk0bbtbpfdqg-a.frankfurt-postgres.render.com',
+        'HOST': os.environ.get('host'),
         'PORT': '5432',
-        'PASSWORD':'2wKeyTjR1yVNmHfB8daRTMVISv9iNlnu'
+        'PASSWORD':os.environ.get('password')
     }
 }
 
