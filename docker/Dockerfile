@@ -10,14 +10,14 @@ RUN pip install ipython
 
 WORKDIR /app
 
-RUN git clone https://github.com/Villanueva-del-Trabuco-EGC/decide.git .
+RUN git clone https://github.com/Villanueva-del-Trabuco-EGC/decide-part-2.git .
 RUN pip install -r requirements.txt
 
 WORKDIR /app/docker
 
 # local settings.py
 ADD docker-settings.py /app/decide/local_settings.py
-ADD ../decide/.env /app/decide/.env
+ADD entorno.env /app/decide/.env
 
 WORKDIR /app/decide
 
