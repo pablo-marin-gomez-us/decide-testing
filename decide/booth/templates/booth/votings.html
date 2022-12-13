@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <table class="table">
+            <thead>
+                 <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">{% trans "voting" %}</th>
+                      <th scope="col">{% trans "link_voting" %}</th>
+                      <th scope="col">{% trans "link_census" %}</th>
+                 </tr>
+            </thead>
+            <tbody>
+                 {% for voting in votings %}
+                 <tr>
+                      <th scope="row">{{voting.id}}</th>
+                            <td>{{voting.name}}</td>
+                            {% if voting.end_date == None %}
+                            <td><a href="/booth/{{voting.id}}"><p>{% trans "booth_voting" %} {{voting.id}}</p></a></td>
+                            {% else %}
+                            <td><p>{% trans "closed_voting" %}</p></td>
+                            {% endif %}
+                            <td><a href="/census/export/{{voting.id}}"><p>{% trans "voting_census" %} {{voting.id}}</p></a></td>
+                 </tr>
+                 {% endfor %}
+            </tbody>
+       </table>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+</body>
+{% endblock %}

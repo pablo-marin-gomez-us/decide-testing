@@ -1,0 +1,76 @@
+# decide booth translation
+# This file is distributed under the same license as the main project
+
+# Translators: Pablo Marin Gomez <pabmargom3@alum.us.es>, 2022
+
+msgid ""
+msgstr ""
+
+"Language: es\n"
+"Last-Translator: Pablo Marin Gomez\n"
+"POT-Creation-Date: 2022-11-19 16:00+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Booth
+
+msgid "decide"
+msgstr "Decide"
+
+msgid "logout"
+msgstr "Salir"
+
+msgid "vID"
+msgstr "ID de la votación"
+
+msgid "vName"
+msgstr "Nombre de la votación"
+
+msgid "Login"
+msgstr "Identificarse"
+
+msgid "LoginGitHub"
+msgstr "Identificarse con GitHub"
+
+msgid "LoginFacebook"
+msgstr "Identificarse con Facebook"
+
+msgid "Vote"
+msgstr "Votar"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Conglatulations. Your vote has been sent"
+msgstr "¡Enhorabuena! Tu voto se ha enviado"
+
+msgid "registered_as_1"
+msgstr "Registrado en "
+
+msgid "registered_as_2"
+msgstr " como "
+
+msgid "vote_with"
+msgstr "Votar como"
+
+# Votings
+
+msgid "voting"
+msgstr "Votación"
+
+msgid "link_voting"
+msgstr "Enlace a la votación"
+
+msgid "link_census"
+msgstr "Enlace al censo"
+
+msgid "booth_voting"
+msgstr "Booth votación "
+
+msgid "closed_voting"
+msgstr "Votación cerrada"
+
+msgid "voting_census"
+msgstr "Censo votación "

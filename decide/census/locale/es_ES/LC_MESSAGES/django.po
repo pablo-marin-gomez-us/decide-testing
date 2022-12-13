@@ -1,0 +1,69 @@
+# decide census translation
+# This file is distributed under the same license as the main project
+
+# Translators: Pablo Marin Gomez <pabmargom3@alum.us.es>, 2022
+
+msgid ""
+msgstr ""
+
+"Language: es\n"
+"Last-Translator: Pablo Marin Gomez\n"
+"POT-Creation-Date: 2022-11-19 16:14+0100\n"
+"PO-Revision-Date: 2022-12-08 10:08+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "decide"
+msgstr "Decide"
+
+# Census
+
+msgid "administration_census"
+msgstr "Administración de censos en votaciones"
+
+msgid "add_census_question"
+msgstr "¿A qué votación quieres añadir el censo?"
+
+msgid "select_file"
+msgstr "Selecciona el archivo desde el que deseas importar tu censo"
+
+msgid "input_user_admin"
+msgstr "Introduzca el usuario administrador que importará el censo"
+
+msgid "input_user_admin_password"
+msgstr "Introduzca la contraseña del usuario administrador"
+
+# Export census
+msgid "census"
+msgstr "Censo:"
+
+msgid "download_csv"
+msgstr "Descargar como CSV"
+
+msgid "vName"
+msgstr "Nombre de la votación"
+
+msgid "vDesc"
+msgstr "Descripción de la votación"
+
+msgid "username"
+msgstr "Nombre de usuario"
+
+msgid "first_name"
+msgstr "Nombre"
+
+msgid "last_name"
+msgstr "Apellido"
+
+msgid "voter_id"
+msgstr "ID del votannte"
+
+# Errors
+
+msgid "goBack"
+msgstr "Volver a la lista de votaciones"
+
+
+

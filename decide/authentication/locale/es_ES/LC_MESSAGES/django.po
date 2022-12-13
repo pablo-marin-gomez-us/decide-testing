@@ -1,0 +1,52 @@
+# decide auth translation
+# This file is distributed under the same license as the main project
+
+# Translators: Pablo Marin Gomez <pabmargom3@alum.us.es>, 2022
+
+msgid ""
+msgstr ""
+
+"Language: es\n"
+"Last-Translator: Pablo Marin Gomez\n"
+"POT-Creation-Date: 2022-11-19 18:45+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+
+msgid "registrar"
+msgstr "Registro"
+
+msgid "infoRegistrar"
+msgstr "Por favor, rellene este formulario para crear una cuenta."
+
+msgid "first_name"
+msgstr "Nombre"
+
+msgid "last_name"
+msgstr "Apellido"
+
+msgid "username"
+msgstr "Nombre de usuario"
+
+msgid "email"
+msgstr "Email"
+
+msgid "password"
+msgstr "Contraseña"
+
+msgid "register"
+msgstr "Registrarse"
+
+msgid "sign"
+msgstr "Identificarse"
+
+msgid "acceptRegister"
+msgstr "Al registrarse, acepta"
+
+msgid "terms"
+msgstr "Terminos y Privacidad"
+
+msgid "alreadyAccount"
+msgstr "¿Ya estas registrado?"
