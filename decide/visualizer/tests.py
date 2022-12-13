@@ -1,3 +1,4 @@
+import time
 from voting.models import Voting, Question
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import timezone
@@ -8,6 +9,12 @@ from selenium.webdriver.common.keys import Keys
 from mixnet.models import Auth
 from django.conf import settings
 from base.tests import BaseTestCase
+from django.utils.translation import activate
+from django.test import TestCase
+from django.test import Client
+
+
+
 
 
 class VisualizerNavigationTest(StaticLiveServerTestCase):
@@ -310,4 +317,67 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
         Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h2')[0].text
         return self.assertEqual(str(Resultados_text),'Resultados:')
+
+    def testCheckDescripcionTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Desc_text= self.driver.find_elements(By.TAG_NAME, 'h3')[0].text
+        Desc_text = Desc_text.split(":")[0]
+        return self.assertEqual(str(Desc_text),'Descripción de la votación')
+
+class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        
+        super().setUp()      
+            
+    def tearDown(self):    
+        super().tearDown()
+        self.driver.quit()
+
+        self.base.tearDown()
+
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+
+    def test_CambiariDeIdioma(self):
+        self.driver.get("http://127.0.0.1:8000/visualizer/1/")
+        self.driver.set_window_size(1292, 599)
+        self.driver.find_element(By.ID, "en").click()
+        self.driver.find_element(By.CSS_SELECTOR, "input:nth-child(4)").click()
+
+    def testCheckDescTransUS(self):
+        self.driver.get("http://127.0.0.1:8000/visualizer/1/")
+        self.driver.find_element(By.ID, "en").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        Desc_text= self.driver.find_elements(By.CSS_SELECTOR, 'h3')[0].text
+        Desc_text = Desc_text.split(":")[0]
+        return self.assertEqual(str(Desc_text),'Description of Voting')
+
+    def testCheckNameTransUS(self):
+        self.driver.get("http://127.0.0.1:8000/visualizer/1/")
+        self.driver.find_element(By.ID, "en").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        Name_text= self.driver.find_elements(By.CSS_SELECTOR, 'h1')[2].text
+        Name_text = Name_text.split(":")[0]
+        return self.assertEqual(str(Name_text),'Name of voting')
     
