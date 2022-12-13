@@ -68,6 +68,7 @@ AUTHENTICATION_BACKENDS = [
     'authentication.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
 ]
 
 MODULES = [
@@ -213,6 +214,10 @@ if os.path.exists("config.jsonnet"):
 
 SOCIAL_AUTH_GITHUB_KEY = 'd781104d572cee72044d'
 SOCIAL_AUTH_GITHUB_SECRET = 'fd224f92a08f2fd84062936c082876fc5c901cc2'
+
+SOCIAL_AUTH_TWITTER_KEY = 'YNDBxTdIi6qS3QL0OcNlMZxZY'
+SOCIAL_AUTH_TWITTER_SECRET = 'JDNATR2mFrvIMg7u6eVltEwI3WyGgF96g2VRpoIsISVLcyezuj'
+
 
 USE_X_FORWARDED_HOST = True
 
