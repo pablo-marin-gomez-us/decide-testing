@@ -409,6 +409,8 @@ class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
     def tearDown(self):    
         super().tearDown()
         self.driver.quit()
+        self.driver.find_element(By.ID, "es").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
 
         self.base.tearDown()
 
