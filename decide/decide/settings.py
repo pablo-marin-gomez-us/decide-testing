@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from decouple import config
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -68,6 +69,7 @@ AUTHENTICATION_BACKENDS = [
     'authentication.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
 ]
 
 MODULES = [
@@ -212,7 +214,11 @@ if os.path.exists("config.jsonnet"):
 #OAUTH
 
 SOCIAL_AUTH_GITHUB_KEY = 'd781104d572cee72044d'
-SOCIAL_AUTH_GITHUB_SECRET = 'fd224f92a08f2fd84062936c082876fc5c901cc2'
+SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET', default='')
+
+SOCIAL_AUTH_TWITTER_KEY = 'DVfT2oobVZ0fS904CYpc20ODT'
+SOCIAL_AUTH_TWITTER_SECRET = config('SOCIAL_AUTH_TWITTER_SECRET', default='')
+
 
 USE_X_FORWARDED_HOST = True
 
