@@ -25,6 +25,8 @@ services:
       - db
     networks:
       - decide
+    env_file:
+      - ../decide/.env
   nginx:
     restart: always
     container_name: decide_nginx
