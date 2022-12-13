@@ -8,8 +8,7 @@ on:
     secrets:
       CODACY_PROJECT_TOKEN:
         required: true
-      EMAILS_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
-        required: true
+      EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
 
 jobs:
   build:
