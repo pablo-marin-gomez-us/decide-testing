@@ -14,6 +14,12 @@ from selenium.webdriver.common.by import By
 from django.utils import timezone
 from voting.models import Voting, Question
 from mixnet.models import Auth
+from django.http import HttpRequest
+import requests
+from . import views
+import os
+from django.urls import reverse
+from voting.models import Voting, Question, QuestionOption
 
 class CensusTestCase(BaseTestCase):
 
@@ -81,6 +87,118 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
 
+class ImportCensusTestCase(BaseTestCase):
+
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+
+    def login(self, user='admin', password='qwerty'):
+        data = {'username': user, 'password': password}
+        response = mods.post('authentication/login', json=data, response=True)
+        self.assertEqual(response.status_code, 200)
+        self.token = response.json().get('token')
+        self.assertTrue(self.token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+
+    def setUp(self):
+        
+        u2 = User(username='decide')
+        u2.set_password('decidedecide')
+        u2.is_superuser = True
+        u2.save()
+        self.admin_user = 'decide'
+        self.admin_pwd = 'decidedecide'
+
+        super().setUp()
+
+    def tearDown(self):
+        User.objects.all().delete()
+        Voting.objects.all().delete()
+        Census.objects.all().delete()
+        super().tearDown()
+
+    def test_page_exists(self):
+        response = self.client.get('/census/manage')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_bad_input_form(self):
+        data = {
+            'algo':'algo'
+        }
+        response = self.client.post('/census/manage',data,format='json')
+        self.assertEqual(response.status_code, 422)
+    
+    def test_format_not_supported(self):
+        self.crear_votacion()
+        file = open("census/testfiles/voters.txt", 'rb')
+        data = {
+            'votation':self.v_id,
+            'user':self.admin_user,
+            'password':self.admin_pwd,
+            'file': file
+        }
+        response = self.client.post(reverse('census_manage'), data=data)
+        self.assertEqual(response.status_code, 400)
+
+    def test_good_input_form_xlsx(self):
+        self.assertEqual(0,Census.objects.count()) #Inincialmente no hay censo
+        ImportCensusTestCase.login(self)
+        self.crear_votacion()
+        file = open("census/testfiles/voters.xlsx", 'rb')
+        data = {
+            'votation':self.v_id,
+            'user':self.admin_user,
+            'password':self.admin_pwd,
+            'file': file
+        }
+        response = self.client.post(reverse('census_manage'), data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(0,Census.objects.count())
+        self.assertEqual(23,Census.objects.count()) #Hay 23 usuarios en el xlsx
+        file.close()
+
+    def test_good_input_form_csv(self):
+        self.assertEqual(0,Census.objects.count()) #Inincialmente no hay censo
+        ImportCensusTestCase.login(self)
+        self.crear_votacion()
+        file = open("census/testfiles/voters.csv", 'rb')
+        data = {
+            'votation':self.v_id,
+            'user':self.admin_user,
+            'password':self.admin_pwd,
+            'file': file
+        }
+        response = self.client.post(reverse('census_manage'), data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertNotEqual(0,Census.objects.count())
+        self.assertEqual(23,Census.objects.count()) #Hay 23 usuarios en el csv
+        file.close()
+
+    
+        
+    
+        
+
+    
+
+
+
+'''
 class ExportCensusTestCase(BaseTestCase):
 
     def setUp(self):
@@ -174,4 +292,4 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
 
         
     
-        
+        '''
