@@ -29,21 +29,13 @@
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1"> {% trans "decide" %}</b-navbar-brand>
         </b-navbar>
-        <form id="language_form" action="{% url 'set_language' %}" method="post">
+        <form id="LanguageForm" action="" method="post">
             {% csrf_token %}
-            <label for="language">Selecciona un idioma:</label>
-            <ol id="language">
-              {% get_current_language as LANGUAGE_CODE %}
-              {% get_available_languages as LANGUAGES %}
-              {% get_language_info_list for LANGUAGES as languages %}
-              {% for language in languages %}
-                <li>
-                  <input type="radio" name="language" value="{{ language.code }}" id="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} checked{% endif %}>
-                  <label for="{{ language.code }}">{{ language.name_local }}</label>
-                </li>
-              {% endfor %}
-            </ol>
-            <input id="boton_cambiar_idioma" type="submit" value="Cambiar idioma">
+            <label for="Language"></label>
+            <fieldset>
+                {{formulario}}
+                <input id="boton_cambiar_idioma" type="submit" value="Cambiar idioma">
+            </fieldset>
         </form>
         <div v-if="voting.question.multioption" class="voting container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
