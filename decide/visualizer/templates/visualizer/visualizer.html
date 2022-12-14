@@ -105,7 +105,7 @@
                     </table>
                 </div>
             </br>
-                <div>
+                <div v-if="voting.end_date" id="graphs_div">
                     <h2 id="graphs_title" class="heading">{% trans "graph_info" %}</h2>  
 
                     <div class="chart-container" style="position: relative; height:40vh; width:80vw">
