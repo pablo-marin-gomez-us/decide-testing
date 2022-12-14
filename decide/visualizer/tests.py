@@ -1,4 +1,5 @@
-from voting.models import Voting, Question
+import time
+from voting.models import QuestionOption, Voting, Question
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import timezone
 
@@ -8,6 +9,13 @@ from selenium.webdriver.common.keys import Keys
 from mixnet.models import Auth
 from django.conf import settings
 from base.tests import BaseTestCase
+from django.utils.translation import activate
+from django.test import TestCase
+from django.test import Client
+from django.contrib.auth.models import User
+
+
+
 
 
 class VisualizerNavigationTest(StaticLiveServerTestCase):
@@ -314,6 +322,12 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h2')[0].text
         return self.assertEqual(str(Resultados_text),'Resultados:')
 
+    def testCheckDescripcionTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Desc_text= self.driver.find_elements(By.TAG_NAME, 'h3')[0].text
+        Desc_text = Desc_text.split(":")[0]
+        return self.assertEqual(str(Desc_text),'Descripción de la votación')
     def testCheckFechaInicioTransES(self):
         self.crear_votacion()
         self.detener_votacion()
@@ -381,3 +395,64 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
         title_text = self.driver.find_element(By.ID,'graph_title_3').text
         self.assertEqual(title_text,'Gráfica de porcentaje de representación')
+
+class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        self.voter_id = User.objects.all().values()[0]['id']
+        self.crear_votacion()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        
+        super().setUp()      
+            
+    def tearDown(self):    
+        super().tearDown()
+        self.driver.quit()
+
+        self.base.tearDown()
+
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        opt1 = QuestionOption(question=q,option="opcion1")
+        opt1.save()
+        opt2 = QuestionOption(question=q,option="opcion2")
+        opt2.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+    
+
+    def testCheckDescTransUS(self):
+        self.driver.get(f'{self.live_server_url}/visualizer/'+ str(self.v_id))
+        self.driver.find_element(By.ID, "id_language_0").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        Desc_text= self.driver.find_elements(By.CSS_SELECTOR, 'h3')[0].text
+        Desc_text = Desc_text.split(":")[0]
+        self.assertTrue(str(Desc_text)=='Description of Voting')
+
+    def testCheckNameTransUS(self):
+        self.driver.get(f'{self.live_server_url}/visualizer/'+ str(self.v_id))
+        self.driver.find_element(By.ID, "id_language_0").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        Name_text= self.driver.find_elements(By.CSS_SELECTOR, 'h1')[2].text
+        Name_text = Name_text.split(":")[0]
+        return self.assertEqual(str(Name_text),'Name of voting')
+    
+    
