@@ -16,3 +16,4 @@ python-social-auth
 social-auth-app-django
 pandas
 xlrd
+openpyxl
