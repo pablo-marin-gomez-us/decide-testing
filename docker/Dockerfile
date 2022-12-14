@@ -1,4 +1,4 @@
-from python:3.7-alpine
+from nickgryg/alpine-pandas:3.7
 
 RUN apk add --no-cache git postgresql-dev gcc libc-dev
 RUN apk add --no-cache gcc g++ make libffi-dev python3-dev build-base gettext
