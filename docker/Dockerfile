@@ -1,4 +1,4 @@
-from python:3.7-alpine
+from nickgryg/alpine-pandas:3.7
 
 RUN apk add --no-cache git postgresql-dev gcc libc-dev
 RUN apk add --no-cache gcc g++ make libffi-dev python3-dev build-base gettext
@@ -13,10 +13,12 @@ WORKDIR /app
 RUN git clone https://github.com/Villanueva-del-Trabuco-EGC/decide.git .
 RUN pip install -r requirements.txt
 
-WORKDIR /app/decide
+WORKDIR /app/docker
 
 # local settings.py
 ADD docker-settings.py /app/decide/local_settings.py
+
+WORKDIR /app/decide
 
 RUN django-admin makemessages
 RUN django-admin compilemessages
