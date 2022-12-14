@@ -1,7 +1,5 @@
 import random
 from django.contrib.auth.models import User
-from django.test import TestCase
-from rest_framework.test import APIClient
 from voting.models import Voting
 from .models import Census
 from base import mods
@@ -14,10 +12,6 @@ from selenium.webdriver.common.by import By
 from django.utils import timezone
 from voting.models import Voting, Question
 from mixnet.models import Auth
-from django.http import HttpRequest
-import requests
-from . import views
-import os
 from django.urls import reverse
 from voting.models import Voting, Question, QuestionOption
 
@@ -189,16 +183,6 @@ class ImportCensusTestCase(BaseTestCase):
         self.assertEqual(23,Census.objects.count()) #Hay 23 usuarios en el csv
         file.close()
 
-    
-        
-    
-        
-
-    
-
-
-
-'''
 class ExportCensusTestCase(BaseTestCase):
 
     def setUp(self):
@@ -289,7 +273,3 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
         title = self.driver.find_element(By.TAG_NAME, 'h1').text
         title = title.split(": ")[0]
         return self.assertEqual(str(title),'Nombre de la votación')
-
-        
-    
-        '''

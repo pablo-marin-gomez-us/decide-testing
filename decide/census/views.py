@@ -2,7 +2,6 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.http import HttpResponse
-from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -20,12 +19,10 @@ from .models import Census
 from .forms import AtributosUser
 from django.views.generic import TemplateView
 import csv
-import requests.adapters
 from voting.models import Voting
 import pandas
 from  django.contrib.admin.views.decorators import staff_member_required
 from census import census_utils as Utils
-from django.http import HttpRequest
 from decide import settings
 from base import mods
 HOST = settings.BASEURL
