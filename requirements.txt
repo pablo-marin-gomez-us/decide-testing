@@ -17,3 +17,4 @@ social-auth-app-django
 pandas
 xlrd
 openpyxl
+python-decouple==3.6
