@@ -97,7 +97,7 @@ class CensusView(APIView,TemplateView):
                 return voters_pk,invalid_voters
                 
             elif(file.name.split('.')[1] == 'xlsx'):
-                reader = pandas.read_excel(file,engine='openpyxl').to_dict()
+                reader = pandas.read_excel(file, engine='openpyxl').to_dict()
                 for username, pwd in zip(list(list(reader.values())[0].values()), list(list(reader.values())[1].values())):
                     token.update({'username': username, 'password': pwd})
                     response = mods.post('authentication/register', json=token, response=True)

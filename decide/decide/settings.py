@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from decouple import config
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -88,7 +89,7 @@ EMAIL_FROM = 'decidetrabuco@gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
-EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo' #Arreglar en la versión final #os.getenv('PASSWORD') también puede hacerse en un archivo aparte
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 PASSWORD_RESET_TIMEOUT = 14400
 
 BASEURL = 'http://localhost:8000'

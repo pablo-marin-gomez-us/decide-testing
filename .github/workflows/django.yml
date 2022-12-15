@@ -8,6 +8,8 @@ on:
     secrets:
       CODACY_PROJECT_TOKEN:
         required: true
+      EMAIL_HOST_PASSWORD:
+        required: true
 
 jobs:
   build:
