@@ -102,15 +102,6 @@ class ImportCensusTestCase(BaseTestCase):
 
         self.v_id = v.id
         return v.id
-
-    def login(self, user='admin', log='qwerty'):
-        data = {'username': user, 'password': log}
-        response = mods.post('authentication/login', json=data, response=True)
-        self.assertEqual(response.status_code, 200)
-        self.token = response.json().get('token')
-        self.assertTrue(self.token)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
-
     def setUp(self):
         
         u2 = User(username='decide')
@@ -129,12 +120,10 @@ class ImportCensusTestCase(BaseTestCase):
         super().tearDown()
 
     def test_page_exists(self):
-        pass
         response = self.client.get('/census/manage')
         self.assertEqual(response.status_code, 200)
     
     def test_bad_input_form(self):
-        pass
         data = {
             'algo':'algo'
         }
@@ -142,7 +131,6 @@ class ImportCensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 422)
     
     def test_format_not_supported(self):
-        pass
         self.crear_votacion()
         file = open("census/testfiles/voters.txt", 'rb')
         data = {
@@ -155,7 +143,6 @@ class ImportCensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_good_input_form_xlsx(self):
-        pass
         self.assertEqual(0,Census.objects.count()) #Inincialmente no hay censo
         ImportCensusTestCase.login(self)
         self.crear_votacion()
@@ -173,7 +160,6 @@ class ImportCensusTestCase(BaseTestCase):
         file.close()
 
     def test_good_input_form_csv(self):
-        pass
         self.assertEqual(0,Census.objects.count()) #Inincialmente no hay censo
         ImportCensusTestCase.login(self)
         self.crear_votacion()
@@ -191,14 +177,13 @@ class ImportCensusTestCase(BaseTestCase):
         file.close()
 
 class ImportCensusTestCaseSelenium(StaticLiveServerTestCase):
-    
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
         options = webdriver.ChromeOptions()
         options.headless = True
         self.driver = webdriver.Chrome(options=options)
-        super().setUp()  
+        super().setUp()
     def tearDown(self):           
         super().tearDown()
         self.driver.quit()
