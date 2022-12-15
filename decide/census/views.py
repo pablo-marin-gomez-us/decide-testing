@@ -97,7 +97,7 @@ class CensusView(APIView,TemplateView):
                 return voters_pk,invalid_voters
                 
             elif(file.name.split('.')[1] == 'xlsx'):
-                reader = pandas.read_excel(file).to_dict()
+                reader = pandas.read_excel(file,engine='openpyxl').to_dict()
                 for username, pwd in zip(list(list(reader.values())[0].values()), list(list(reader.values())[1].values())):
                     token.update({'username': username, 'password': pwd})
                     response = mods.post('authentication/register', json=token, response=True)
@@ -118,7 +118,7 @@ class CensusView(APIView,TemplateView):
         voters_pk = []
         invalid_voters = []
         voters_pk,invalid_voters = create_voters(request)
-        if(voters_pk==None or invalid_voters==None):
+        if(voters_pk is None or invalid_voters is None):
             return Response({'This file format is not supported, try a .csv or .xlsx'}, status=ST_400)
 
         def add_census(voters_pk, voting_pk):

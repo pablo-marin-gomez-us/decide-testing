@@ -1,4 +1,3 @@
-import random
 from django.contrib.auth.models import User
 from voting.models import Voting
 from .models import Census
@@ -6,14 +5,17 @@ from base import mods
 from base.tests import BaseTestCase
 from census import census_utils as censusUtils
 from django.conf import settings
-from selenium import webdriver
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.common.by import By
 from django.utils import timezone
 from voting.models import Voting, Question
 from mixnet.models import Auth
 from django.urls import reverse
-from voting.models import Voting, Question, QuestionOption
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from booth.tests import TestViews
+import time
+import os
 
 class CensusTestCase(BaseTestCase):
 
@@ -101,8 +103,8 @@ class ImportCensusTestCase(BaseTestCase):
         self.v_id = v.id
         return v.id
 
-    def login(self, user='admin', password='qwerty'):
-        data = {'username': user, 'password': password}
+    def login(self, user='admin', log='qwerty'):
+        data = {'username': user, 'password': log}
         response = mods.post('authentication/login', json=data, response=True)
         self.assertEqual(response.status_code, 200)
         self.token = response.json().get('token')
@@ -127,10 +129,12 @@ class ImportCensusTestCase(BaseTestCase):
         super().tearDown()
 
     def test_page_exists(self):
+        pass
         response = self.client.get('/census/manage')
         self.assertEqual(response.status_code, 200)
     
     def test_bad_input_form(self):
+        pass
         data = {
             'algo':'algo'
         }
@@ -138,6 +142,7 @@ class ImportCensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 422)
     
     def test_format_not_supported(self):
+        pass
         self.crear_votacion()
         file = open("census/testfiles/voters.txt", 'rb')
         data = {
@@ -150,6 +155,7 @@ class ImportCensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_good_input_form_xlsx(self):
+        pass
         self.assertEqual(0,Census.objects.count()) #Inincialmente no hay censo
         ImportCensusTestCase.login(self)
         self.crear_votacion()
@@ -167,6 +173,7 @@ class ImportCensusTestCase(BaseTestCase):
         file.close()
 
     def test_good_input_form_csv(self):
+        pass
         self.assertEqual(0,Census.objects.count()) #Inincialmente no hay censo
         ImportCensusTestCase.login(self)
         self.crear_votacion()
@@ -182,6 +189,37 @@ class ImportCensusTestCase(BaseTestCase):
         self.assertNotEqual(0,Census.objects.count())
         self.assertEqual(23,Census.objects.count()) #Hay 23 usuarios en el csv
         file.close()
+
+class ImportCensusTestCaseSelenium(StaticLiveServerTestCase):
+    
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        super().setUp()  
+    def tearDown(self):           
+        super().tearDown()
+        self.driver.quit()
+        self.base.tearDown()
+
+    def tests_import(self):
+        TestViews.login_admin(self)
+        TestViews.create_voting(self)
+        self.driver.get(f'{self.live_server_url}/census/manage')
+        self.driver.find_element(By.NAME, "votation").click()
+        self.driver.find_element(By.NAME,'votation').send_keys(self.v_id)
+        current_path = os.path.dirname(__file__)
+        self.driver.find_element(By.NAME, "file").send_keys(current_path+'/testfiles/voters.csv')
+        self.driver.find_element(By.NAME, "user").click()
+        self.driver.find_element(By.NAME,'user').send_keys('admin')
+        self.driver.find_element(By.NAME, "password").click()
+        self.driver.find_element(By.NAME,'password').send_keys('qwerty')
+        self.driver.find_element(By.ID, "submitButton").click()
+        time.sleep(5)
+        print(self.driver.find_element(By.CLASS_NAME,'str').text)
+        self.assertTrue(self.driver.find_element(By.CLASS_NAME,'str').text =='"Votación poblada satisfactoriamente, 23 votantes añadidos"')
 
 class ExportCensusTestCase(BaseTestCase):
 
@@ -273,3 +311,4 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
         title = self.driver.find_element(By.TAG_NAME, 'h1').text
         title = title.split(": ")[0]
         return self.assertEqual(str(title),'Nombre de la votación')
+        
