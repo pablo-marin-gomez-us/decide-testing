@@ -1,4 +1,4 @@
-from python:3.7-alpine
+from nickgryg/alpine-pandas:3.7
 
 RUN apk add --no-cache git postgresql-dev gcc libc-dev
 RUN apk add --no-cache gcc g++ make libffi-dev python3-dev build-base gettext
@@ -18,6 +18,8 @@ WORKDIR /app/docker
 # local settings.py
 ADD docker-settings.py /app/decide/local_settings.py
 ADD entorno.env /app/decide/.env
+
+WORKDIR /app/decide
 
 WORKDIR /app/decide
 
