@@ -410,12 +410,12 @@ class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
         
         super().setUp()      
             
-    def tearDown(self):    
-        super().tearDown()
+    def tearDown(self):   
         self.driver.quit()
         activate('es_ES')
 
         self.base.tearDown()
+        super().tearDown()
 
     def crear_votacion(self):
         q = Question(desc = 'test question')
@@ -446,7 +446,10 @@ class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
         Desc_text= self.driver.find_elements(By.CSS_SELECTOR, 'h3')[0].text
         Desc_text = Desc_text.split(":")[0]
+        self.driver.find_element(By.ID, "id_language_1").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
         self.assertTrue(str(Desc_text)=='Description of Voting')
+        
 
     def testCheckNameTransUS(self):
         self.driver.get(f'{self.live_server_url}/visualizer/'+ str(self.v_id))
@@ -454,6 +457,8 @@ class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
         Name_text= self.driver.find_elements(By.CSS_SELECTOR, 'h1')[2].text
         Name_text = Name_text.split(":")[0]
+        self.driver.find_element(By.ID, "id_language_1").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
         return self.assertEqual(str(Name_text),'Name of voting')
     
     
