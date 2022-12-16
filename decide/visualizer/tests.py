@@ -413,6 +413,7 @@ class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
     def tearDown(self):    
         super().tearDown()
         self.driver.quit()
+        activate('es')
 
         self.base.tearDown()
 
