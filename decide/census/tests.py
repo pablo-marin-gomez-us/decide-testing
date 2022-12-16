@@ -13,11 +13,13 @@ from selenium.webdriver.common.by import By
 from django.utils import timezone
 from voting.models import Voting, Question, QuestionOption
 from mixnet.models import Auth
+from django.utils.translation import activate
 
 class CensusTestCase(BaseTestCase):
 
     def setUp(self):
         super().setUp()
+        activate('es_ES')
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
 
