@@ -55,14 +55,23 @@
             <!--LOGIN CON GITHUB-->
 
             {% if not user.is_authenticated and not user.is_staff %}
-            <a id='githubButton' href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
+            <h2>------or------</h2>
+            <a id='githubButton' v-if="signup" href="{% url 'social:begin' 'github' %}?next={{ request.path }}" class="btn btn-secondary">
                 <span>{% trans "LoginGitHub" %}</span>
             </a>
+
+            <a id='twitterButton' v-if="signup" href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}" class="btn btn-secondary">
+                <span>Login with Twitter</span>
+            </a>
+
             {% elif not user.is_staff %}
-            <p>{% trans "register_as_1" %}{{user.social_auth.get.provider}} {% trans "register_as_2" %} {{user}}</p>
+            <p v-if="signup">{% trans "register_as_1" %}{{user.social_auth.get.provider}} {% trans "register_as_2" %} {{user}}</p>
             <b-button type="button" variant="primary" v-if="signup" v-on:click="getSocialAuthUser">
                 {% trans "vote_with" %} {{user.social_auth.get.provider}}
             </b-button>
+            <a id='logoutButton' href="/booth/logout" v-if="signup" class="btn btn-danger">
+                <span>Logout from {{user.social_auth.get.provider}}</span>
+            </a>
             {% endif %}
 
 

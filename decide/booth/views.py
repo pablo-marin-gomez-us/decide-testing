@@ -5,6 +5,8 @@ from django.http import Http404
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.template import loader
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 from base import mods
 from voting.models import Voting
@@ -47,4 +49,8 @@ def list_votings(request):
     'votings': votings
   }
   return HttpResponse(template.render(context, request))
+
+def social_logout(request):
+  logout(request)
+  return redirect(request.META['HTTP_REFERER'])
 
