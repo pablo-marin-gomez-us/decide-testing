@@ -1,4 +1,5 @@
 import random
+from time import sleep
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from rest_framework.test import APIClient
@@ -19,7 +20,6 @@ class CensusTestCase(BaseTestCase):
 
     def setUp(self):
         super().setUp()
-        activate('es_ES')
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
 
@@ -151,6 +151,7 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
         self.base = BaseTestCase()
+        activate('es_ES')
         self.base.setUp()
         super().setUp()
         self.voter_id = User.objects.all().values()[0]['id']
@@ -159,7 +160,7 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
         self.census.save()
 
         options = webdriver.ChromeOptions()
-        options.headless = True
+        options.headless = False
         self.driver = webdriver.Chrome(options=options)
     
 
@@ -186,6 +187,7 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
         return v.id
 
     def login_admin(self):
+        activate('es_ES')
         self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
         self.driver.find_element(By.ID, "id_username").click()
         self.driver.find_element(By.ID, "id_username").send_keys("admin")
@@ -195,6 +197,8 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
 
     def testCheckExportName(self):
         self.login_admin()
+        self.driver.get(f'{self.live_server_url}/census/export/{self.v_id}')
+        activate('es_ES')
         self.driver.get(f'{self.live_server_url}/census/export/{self.v_id}')
         title = self.driver.find_element(By.TAG_NAME, 'h1').text
         title = title.split(": ")[0]
