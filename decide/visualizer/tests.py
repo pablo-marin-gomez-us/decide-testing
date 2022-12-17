@@ -1,3 +1,5 @@
+import time
+from voting.models import QuestionOption, Voting, Question
 from voting.models import Voting, Question, QuestionOption
 from store.models import Vote
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -11,6 +13,13 @@ from selenium.webdriver.common.keys import Keys
 from mixnet.models import Auth
 from django.conf import settings
 from base.tests import BaseTestCase
+from django.utils.translation import activate
+from django.test import TestCase
+from django.test import Client
+from django.contrib.auth.models import User
+
+
+
 
 
 class VisualizerNavigationTest(StaticLiveServerTestCase):
@@ -45,12 +54,34 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         self.driver.find_element(By.ID,'id_password').send_keys('WRONG')
         self.driver.find_element(By.ID,'login-form').submit()
 
-
-
         self.assertTrue(len(self.driver.find_elements(By.CLASS_NAME,'errornote'))==1)
 
-    def test_graphs_title_exist(self):
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
 
+        v = Voting(name='test voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                            defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.seats = 3
+        v.min_percentage_representation=5
+        v.save()
+
+        self.v_id = v.id
+        self.voting = v
+        return v.id
+
+    def detener_votacion(self):
+        v = Voting.objects.get(id=self.v_id)
+        v.end_date = timezone.now()
+        v.save()
+
+    def test_graphs_dont_exist_nonstarted(self):
         q = Question(desc = 'test question')
         q.save()
 
@@ -58,78 +89,75 @@ class VisualizerNavigationTest(StaticLiveServerTestCase):
         v.save()
 
         self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graphs_title').text
-        self.assertEqual(title_text,'Gráficas de la votación:')
+        try:
+            title_text = self.driver.find_element(By.ID,'graphs_div').is_displayed()
+        except:
+            return True
+        self.assertTrue(title_text)
+
+    def test_graphs_dont_exist_started(self):
+        self.crear_votacion()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
+        try:
+            title_text = self.driver.find_element(By.ID,'graphs_div').is_displayed()
+        except:
+            return True
+        self.assertTrue(title_text)
+
+    def test_graphs_title_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
+
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
+        title_text = self.driver.find_element(By.ID,'graphs_title').is_displayed()
+        self.assertTrue(title_text)
     
     def test_graph_title_1_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
 
-        q = Question(desc = 'test question')
-        q.save()
-
-        v = Voting(name='test voting', question=q)
-        v.save()
-
-        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graph_title_1').text
-        self.assertEqual(title_text,'Gráfica de votos')
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
+        title_text = self.driver.find_element(By.ID,'graph_title_1').is_displayed()
+        self.assertTrue(title_text)
 
     def test_graph_title_2_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
 
-        q = Question(desc = 'test question')
-        q.save()
-
-        v = Voting(name='test voting', question=q)
-        v.save()
-
-        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graph_title_2').text
-        self.assertEqual(title_text,'Gráfica de escaños')
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
+        title_text = self.driver.find_element(By.ID,'graph_title_2').is_displayed()
+        self.assertTrue(title_text)
         
     def test_graph_title_3_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
 
-        q = Question(desc = 'test question')
-        q.save()
-
-        v = Voting(name='test voting', question=q)
-        v.save()
-
-        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
-        title_text = self.driver.find_element(By.ID,'graph_title_3').text
-        self.assertEqual(title_text,'Gráfica de porcentaje de representación')
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
+        title_text = self.driver.find_element(By.ID,'graph_title_3').is_displayed()
+        self.assertTrue(title_text)
 
     def test_graph_canvas_1_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
 
-        q = Question(desc = 'test question')
-        q.save()
-
-        v = Voting(name='test voting', question=q)
-        v.save()
-
-        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
         canvas_is_displayed = self.driver.find_element(By.ID,'Graph1').is_displayed()
         self.assertTrue(canvas_is_displayed)
 
     def test_graph_canvas_2_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
 
-        q = Question(desc = 'test question')
-        q.save()
-
-        v = Voting(name='test voting', question=q)
-        v.save()
-
-        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
         canvas_is_displayed = self.driver.find_element(By.ID,'Graph2').is_displayed()
         self.assertTrue(canvas_is_displayed)
 
     def test_graph_canvas_3_exist(self):
+        self.crear_votacion()
+        self.detener_votacion()
 
-        q = Question(desc = 'test question')
-        q.save()
-
-        v = Voting(name='test voting', question=q)
-        v.save()
-
-        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}')
+        self.driver.get(f'{self.live_server_url}/visualizer/{self.v_id}')
         canvas_is_displayed = self.driver.find_element(By.ID,'Graph3').is_displayed()
         self.assertTrue(canvas_is_displayed)
 
@@ -358,14 +386,17 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting', question=q)
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
+                                            defaults={'me': True, 'name': 'test auth'})
         a.save()
         v.auths.add(a)
         v.create_pubkey()
         v.start_date = timezone.now()
+        v.seats = 3
+        v.min_percentage_representation=5
         v.save()
 
         self.v_id = v.id
+        self.voting = v
         return v.id
 
     def detener_votacion(self):
@@ -393,4 +424,144 @@ class VotingVisualizerTransalationTestCase(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
         Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h2')[0].text
         return self.assertEqual(str(Resultados_text),'Resultados:')
+
+    def testCheckDescripcionTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Desc_text= self.driver.find_elements(By.TAG_NAME, 'h3')[0].text
+        Desc_text = Desc_text.split(":")[0]
+        return self.assertEqual(str(Desc_text),'Descripción de la votación')
+    def testCheckFechaInicioTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h4')[0].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Fecha de inicio de la votación')
+
+    def testCheckFechaFinTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h4')[1].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Fecha de fin de la votación')
+
+    def testCheckEscañosTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h3')[1].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Número de escaños a repartir')
+
+    def testCheckMinPercentageTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'h3')[2].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),'Porcentaje mínimo para tener representación')
+
+    def testCheckHontDesTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        Resultados_text= self.driver.find_elements(By.TAG_NAME, 'p')[0].text
+        Resultados_text=Resultados_text.split(':')[0]
+        return self.assertEqual(str(Resultados_text),"El cálculo en el reparto de escaños esta basado en la Ley D'Hont, en la cual se ignoran las candidaturas con menos del mínimo porcentaje necesario de votos totales, además en caso de empate en el reparto de un escaño, este será dado al candidato con más votos totales obtenidos")
+
+    def testCheckTituloGraficasTransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graphs_title').text
+        self.assertEqual(title_text,'Gráficas de la votación:')
+    
+    def testCheckTituloGraficas1TransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graph_title_1').text
+        self.assertEqual(title_text,'Gráfica de votos')
+
+    def testCheckTituloGraficas2TransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graph_title_2').text
+        self.assertEqual(title_text,'Gráfica de escaños')
+        
+    def testCheckTituloGraficas3TransES(self):
+        self.crear_votacion()
+        self.detener_votacion()
+        self.driver.get(f'{self.live_server_url}/visualizer/'+str(self.v_id))
+        title_text = self.driver.find_element(By.ID,'graph_title_3').text
+        self.assertEqual(title_text,'Gráfica de porcentaje de representación')
+
+class VotingVisualizerTransalationUSTestCase(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        self.voter_id = User.objects.all().values()[0]['id']
+        self.crear_votacion()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        
+        super().setUp()      
+            
+    def tearDown(self):   
+        self.driver.quit()
+        activate('es_ES')
+
+        self.base.tearDown()
+        super().tearDown()
+
+    def crear_votacion(self):
+        q = Question(desc = 'test question')
+        q.save()
+
+        opt1 = QuestionOption(question=q,option="opcion1")
+        opt1.save()
+        opt2 = QuestionOption(question=q,option="opcion2")
+        opt2.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        self.v_id = v.id
+        return v.id
+    
+
+    def testCheckDescTransUS(self):
+        self.driver.get(f'{self.live_server_url}/visualizer/'+ str(self.v_id))
+        self.driver.find_element(By.ID, "id_language_0").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        Desc_text= self.driver.find_elements(By.CSS_SELECTOR, 'h3')[0].text
+        Desc_text = Desc_text.split(":")[0]
+        self.driver.find_element(By.ID, "id_language_1").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        self.assertTrue(str(Desc_text)=='Description of Voting')
+        
+
+    def testCheckNameTransUS(self):
+        self.driver.get(f'{self.live_server_url}/visualizer/'+ str(self.v_id))
+        self.driver.find_element(By.ID, "id_language_0").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        Name_text= self.driver.find_elements(By.CSS_SELECTOR, 'h1')[2].text
+        Name_text = Name_text.split(":")[0]
+        self.driver.find_element(By.ID, "id_language_1").click()
+        self.driver.find_element(By.ID, "boton_cambiar_idioma").click()
+        return self.assertEqual(str(Name_text),'Name of voting')
+    
     

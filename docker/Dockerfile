@@ -23,6 +23,8 @@ WORKDIR /app/decide
 
 WORKDIR /app/decide
 
+WORKDIR /app/decide
+
 RUN django-admin makemessages
 RUN django-admin compilemessages
 
