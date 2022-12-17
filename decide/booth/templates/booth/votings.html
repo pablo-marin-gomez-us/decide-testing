@@ -26,7 +26,7 @@
                  <tr>
                       <th scope="row">{{voting.id}}</th>
                             <td>{{voting.name}}</td>
-                            {% if voting.end_date == None %}
+                            {% if voting.end_date == None and not voting.start_date == None%}
                             <td><a href="/booth/{{voting.id}}"><p>{% trans "booth_voting" %} {{voting.id}}</p></a></td>
                             {% else %}
                             <td><p>{% trans "closed_voting" %}</p></td>
