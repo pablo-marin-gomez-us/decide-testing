@@ -17,6 +17,11 @@ WORKDIR /app/docker
 
 # local settings.py
 ADD docker-settings.py /app/decide/local_settings.py
+ADD entorno.env /app/decide/.env
+
+WORKDIR /app/decide
+
+WORKDIR /app/decide
 
 WORKDIR /app/decide
 

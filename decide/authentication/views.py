@@ -16,6 +16,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 from django.views.generic import TemplateView
+from django.contrib.sites.shortcuts import get_current_site
 
 from .tokens import account_activation_token
 
@@ -54,18 +55,18 @@ def activate(request, uidb64, token):
         user.save()
 
         messages.success(request, 'Thank you for your email confirmation. Now you can log in your account.')
-        return redirect('http://localhost:8000/authentication/register/')
+        return redirect('https' if request.is_secure() else 'http' + '://' + get_current_site(request).domain)
     else:
         print('Fallo')
         messages.error(request, 'Activation link is invalid!')
 
-    return redirect('http://localhost:8000/authentication/register/')
+    return redirect('https' if request.is_secure() else 'http' + '://' + get_current_site(request).domain)
 
 def activateEmail(request, user, to_email):
     mail_subject = 'Activate your user account.'
     message = render_to_string('template_activate_account.html',{
         'user': user.username,
-        'domain': 'localhost:8000',
+        'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token':account_activation_token.make_token(user),
         'protocol': 'https' if request.is_secure() else 'http'

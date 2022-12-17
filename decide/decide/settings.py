@@ -90,7 +90,7 @@ EMAIL_FROM = 'decidetrabuco@gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
-EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo' #Arreglar en la versión final #os.getenv('PASSWORD') también puede hacerse en un archivo aparte
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 PASSWORD_RESET_TIMEOUT = 14400
 
 BASEURL = 'http://localhost:8000'

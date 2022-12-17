@@ -186,7 +186,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting 1', question=q, desc='test voting 1')
         v.save()
         
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vState= self.driver.find_element(By.TAG_NAME,"h2").text
         self.assertTrue(vState=="Votación no comenzada")
         
@@ -201,7 +201,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting 2', question=q, desc='test voting 2',start_date=date)
         v.save()
         
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vState= self.driver.find_element(By.TAG_NAME,"h2").text
         self.assertTrue(vState=="Votación en curso")
         
@@ -220,7 +220,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting 3', question=q, desc='test voting 3', start_date=date, end_date=date)
         v.save()
         
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
         textoDesc="Descripción de la votación: {}".format(v.desc)
         self.assertTrue(vDesc==textoDesc)
@@ -240,7 +240,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting 4', question=q, desc='test voting 4', start_date=date, end_date=date)
         v.save()
 
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
         textoDesc="Descripción de la votación: {}".format(v.desc)
         
@@ -263,7 +263,7 @@ class VotingVisualizerTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting 5', question=q, desc='test voting 5', seats=5, min_percentage_representation=10, start_date=date, end_date=date)
         v.save()
         
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vDesc= self.driver.find_element(By.TAG_NAME,"h3").text
         textoDesc="Descripción de la votación: {}".format(v.desc)
         
