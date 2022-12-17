@@ -22,6 +22,12 @@ msgstr "Decide"
 msgid "logout"
 msgstr "Salir"
 
+msgid "or"
+msgstr "------o------"
+
+msgid "logoutFrom"
+msgstr "Salir de "
+
 msgid "vID"
 msgstr "ID de la votación"
 
@@ -33,6 +39,9 @@ msgstr "Identificarse"
 
 msgid "LoginGitHub"
 msgstr "Identificarse con GitHub"
+
+msgid "LoginTwitter"
+msgstr "Identificarse con Twitter"
 
 msgid "LoginFacebook"
 msgstr "Identificarse con Facebook"
