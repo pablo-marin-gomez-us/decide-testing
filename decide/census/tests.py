@@ -1,12 +1,10 @@
 from django.contrib.auth.models import User
-from voting.models import Voting
+from voting.models import Voting, Question
 from .models import Census
-from base import mods
 from base.tests import BaseTestCase
 from census import census_utils as censusUtils
 from django.conf import settings
 from django.utils import timezone
-from voting.models import Voting, Question
 from mixnet.models import Auth
 from django.urls import reverse
 

@@ -77,7 +77,7 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEqual(voting.desc,'Description example')
         self.assertEqual(voting.seats,0)
         self.assertEqual(voting.min_percentage_representation,5)
-    
+
 class VotingPriorityModelTestCase(BaseTestCase):
     def setUp(self):
         p = Question(desc="Pregunta con Prioridad", multioption=True)
