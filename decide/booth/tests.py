@@ -76,7 +76,7 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
     def testCheckNombreTransES(self):
         self.crear_votacion()
         self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
-        sub_title = self.driver.find_element(By.TAG_NAME, 'h3').text
+        sub_title = self.driver.find_element(By.XPATH, '//*[@id="app-booth"]/div/h3').text
         sub_title = sub_title.split(": ")[0]      
         return self.assertEqual(str(sub_title),'Nombre de la votación')
 
@@ -103,6 +103,11 @@ class BoothTranslationTestCase(StaticLiveServerTestCase):
         login = self.driver.find_element(By.CLASS_NAME,'btn-secondary').text
         return self.assertEqual(login,"Identificarse con GitHub")  
 
+    def testCheckTwitterTransES(self):
+        self.crear_votacion()
+        self.driver.get(f'{self.live_server_url}/booth/'+str(self.v_id))
+        login = self.driver.find_element(By.CSS_SELECTOR,'#twitterButton').text
+        return self.assertEqual(login,"Identificarse con Twitter")  
 
 @override_settings(SOCIAL_AUTH_GITHUB_KEY='1',
                    SOCIAL_AUTH_GITHUB_SECRET='2')
