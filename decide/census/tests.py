@@ -322,11 +322,4 @@ class ExportCensusTransTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").click()
         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
         self.driver.find_element(By.CSS_SELECTOR, ".submit-row > input").click()
-
-    def testCheckExportName(self):
-        self.login_admin()
-        self.driver.get(f'{self.live_server_url}/census/export/{self.v_id}')
-        title = self.driver.find_element(By.TAG_NAME, 'h1').text
-        title = title.split(": ")[0]
-        return self.assertEqual(str(title),'Nombre de la votación')
         
