@@ -21,13 +21,9 @@ ADD entorno.env /app/decide/.env
 
 WORKDIR /app/decide
 
-WORKDIR /app/decide
-
-WORKDIR /app/decide
 
 RUN django-admin makemessages
 RUN django-admin compilemessages
 
-RUN ./manage.py collectstatic --noinput
 
 #CMD ["gunicorn", "-w 5", "decide.wsgi", "--timeout=500", "-b 0.0.0.0:5000"]
