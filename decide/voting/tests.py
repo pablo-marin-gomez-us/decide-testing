@@ -77,9 +77,56 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEqual(voting.desc,'Description example')
         self.assertEqual(voting.seats,0)
         self.assertEqual(voting.min_percentage_representation,5)
+
+class VotingPriorityModelTestCase(BaseTestCase):
+    def setUp(self):
+        p = Question(desc="Pregunta con Prioridad", multioption=True)
+        p.save()
+        opt1 = QuestionOption(question=p, option="Primera Opción")
+        opt1.save()
+        opt2 = QuestionOption(question=p, option="Segunda Opción")
+        opt2.save()
+        opt3 = QuestionOption(question=p, option="Tercera Opción")
+        opt3.save()
+
+        self.v = Voting(name="Votacion con Prioridad", question=p)
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v=None
+
+    def testExist(self):
+        v = Voting.objects.get(name="Votacion con Prioridad")
+        self.assertEqual(v.question.options.all()[0].option,'Primera Opción')
+        self.assertEqual(v.question.options.all()[1].option,'Segunda Opción')
+        self.assertEqual(v.question.options.all()[2].option,'Tercera Opción')
+        self.assertEqual(len(v.question.options.all()),3)
+        self.assertEqual(v.question.multioption,True)
     
+    def testChanginPriority(self):
+        v = Voting.objects.get(name="Votacion con Prioridad")
+        v.question.multioption=False
+        self.v.save()
+        self.assertEqual(v.question.multioption, False)
+        self.assertEqual(v.seats, 0)
+        self.assertEqual(v.min_percentage_representation, 5)
+    
+    def test_create_votingAPI(self):
+        self.login()
+        data = {
+            'name':'Example',
+            'desc': 'Description example',
+            'question': 'I want a',
+            'question_opt': ['cat','dog','horse']
+        }
+        response = self.client.post('/voting/',data,format='json')
+        self.assertEqual(response.status_code,201)
 
-
+        voting = Voting.objects.get(name='Example')
+        self.assertEqual(voting.desc,'Description example')
+        self.assertEqual(voting.question.multioption,False)
 
 class VotingTestCase(BaseTestCase):
 
@@ -105,6 +152,12 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(str(vSeats.question.options.all()[0]),"option 1 (2)")
         self.assertEqual(vSeats.seats,5)
         self.assertEqual(vSeats.min_percentage_representation,2)
+
+        votingPriority = self.create_voting_priority()
+        self.assertEqual(str(votingPriority), "test voting priority")
+        self.assertEqual(str(votingPriority.question),"test question priority")
+        self.assertEqual(str(votingPriority.question.options.all()[0]),"option 1 (2)")
+        self.assertEqual(votingPriority.question.multioption,True)
 
     def test_update_voting_400(self):
         v = self.create_voting()
@@ -154,6 +207,22 @@ class VotingTestCase(BaseTestCase):
 
         return v
 
+    def create_voting_priority(self):
+        p = Question(desc='test question priority', multioption=True)
+        p.save()
+        for i in range(5):
+            opt = QuestionOption(question=p, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting priority', question=p)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
     def create_voters(self, v):
         for i in range(100):
             u, _ = User.objects.get_or_create(username='testvoter{}'.format(i))
@@ -168,6 +237,25 @@ class VotingTestCase(BaseTestCase):
         user.set_password('qwerty')
         user.save()
         return user
+
+    def store_votes_priority(self, v):
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
+        clear = [13542]
+
+        a,b = self.encrypt_msg(13542, v)
+        data = {
+            'voting': v.id,
+            'voter': voter.voter_id,
+            'vote': { 'a': a, 'b': b },
+        }
+
+        user = self.get_or_create_user(voter.voter_id)
+        self.login(user=user.username)
+        voter = voters.pop()
+        mods.post('store', json=data)
+
+        return clear
 
     def store_votes(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
@@ -248,6 +336,24 @@ class VotingTestCase(BaseTestCase):
         for q in v.postproc:
             self.assertEqual(q["seats"], hont[q["option"]])
 
+    def test_complete_voting_priority(self):
+        v = self.create_voting_priority()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes_priority(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+        self.assertEquals(len(tally),1)
+        self.assertEquals(tally[0],13542)
+        self.assertEquals(tally,clear)
+   
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
         response = self.client.post('/voting/', data, format='json')

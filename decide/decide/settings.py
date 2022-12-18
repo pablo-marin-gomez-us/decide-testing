@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from decouple import config
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -70,6 +71,7 @@ AUTHENTICATION_BACKENDS = [
     'authentication.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
 ]
 
 MODULES = [
@@ -90,7 +92,7 @@ EMAIL_FROM = 'decidetrabuco@gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'decidetrabuco@gmail.com'
-EMAIL_HOST_PASSWORD = 'uqtyvutrngiakvqo' #Arreglar en la versión final #os.getenv('PASSWORD') también puede hacerse en un archivo aparte
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 PASSWORD_RESET_TIMEOUT = 14400
 
 BASEURL = os.environ.get('baseurl')
@@ -98,6 +100,7 @@ BASEURL = os.environ.get('baseurl')
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -167,15 +170,18 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en_US'
+
+
+#LANGUAGE_CODE = 'en_US'
 LANGUAGE_CODE = 'es_ES'
 
 
 
 LANGUAGES = (
     ('es', _('Spanish')),
-    ('en_US', _('English')),
+    ('en', _('English')),
 )
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
 
 TIME_ZONE = 'UTC'
 
@@ -215,6 +221,12 @@ if os.path.exists("config.jsonnet"):
 #OAUTH
 
 SOCIAL_AUTH_GITHUB_KEY = 'd781104d572cee72044d'
-SOCIAL_AUTH_GITHUB_SECRET = 'fd224f92a08f2fd84062936c082876fc5c901cc2'
+SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET', default='')
+
+SOCIAL_AUTH_TWITTER_KEY = 'DVfT2oobVZ0fS904CYpc20ODT'
+SOCIAL_AUTH_TWITTER_SECRET = config('SOCIAL_AUTH_TWITTER_SECRET', default='')
+
+
+USE_X_FORWARDED_HOST = True
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES

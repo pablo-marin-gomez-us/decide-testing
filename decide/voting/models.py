@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from base import mods
@@ -10,7 +8,6 @@ from base.models import Auth, Key
 class RangeIntegerField(models.IntegerField):
     def __init__(self, *args, **kwargs):
         validators = kwargs.pop("validators", [])
-        
         # turn min_value and max_value params into validators
         min_value = kwargs.pop("min_value", None)
         if min_value is not None:

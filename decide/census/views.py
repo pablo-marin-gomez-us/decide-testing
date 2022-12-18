@@ -2,7 +2,6 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.http import HttpResponse
-from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -11,7 +10,8 @@ from rest_framework.status import (
         HTTP_400_BAD_REQUEST as ST_400,
         HTTP_401_UNAUTHORIZED as ST_401,
         HTTP_404_NOT_FOUND as ST_404,
-        HTTP_409_CONFLICT as ST_409
+        HTTP_409_CONFLICT as ST_409,
+        HTTP_422_UNPROCESSABLE_ENTITY as ST_422
 )
 from rest_framework.views import APIView
 from base.perms import UserIsStaff
@@ -19,11 +19,13 @@ from .models import Census
 from .forms import AtributosUser
 from django.views.generic import TemplateView
 import csv
-import requests
 from voting.models import Voting
 import pandas
 from  django.contrib.admin.views.decorators import staff_member_required
 from census import census_utils as Utils
+from decide import settings
+from base import mods
+HOST = settings.BASEURL
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -67,28 +69,27 @@ class CensusView(APIView,TemplateView):
         return (context)
 
     def post(self,request):
-        HOST = 'http://localhost:8000'
         votation = request.data.get('votation', '')
         user = request.data.get('user', '')
         password = request.data.get('password', '')
         if not votation or not user or not password:
-            return Response({'Any empty inputs?'}, status=ST_400)
+            return Response({'Any empty inputs?'}, status=ST_422)
 
         def decode_utf8(input_iterator):
             for line in input_iterator:
                 yield line.decode('utf-8')
 
         def create_voters(request):
-            HOST = 'http://localhost:8000'
             file = request.FILES['file']
-            reader = csv.DictReader(decode_utf8(file))
+            
             if(file.name.split('.')[1] == 'csv'):
+                reader = csv.DictReader(decode_utf8(file))
                 for row in reader:
                     aux_list = list(row.values())
                     username = aux_list[0]
                     pwd = aux_list[1]
                     token.update({'username': username, 'password': pwd})
-                    response = requests.post(HOST + '/authentication/register/', data=token)
+                    response = mods.post('authentication/register', json=token, response=True)
                     if response.status_code == 201:
                         voters_pk.append(response.json().get('user_pk'))
                     else:
@@ -96,20 +97,20 @@ class CensusView(APIView,TemplateView):
                 return voters_pk,invalid_voters
                 
             elif(file.name.split('.')[1] == 'xlsx'):
-                reader = pandas.read_excel(file).to_dict()
+                reader = pandas.read_excel(file, engine='openpyxl').to_dict()
                 for username, pwd in zip(list(list(reader.values())[0].values()), list(list(reader.values())[1].values())):
                     token.update({'username': username, 'password': pwd})
-                    response = requests.post(HOST + '/authentication/register/', data=token)
+                    response = mods.post('authentication/register', json=token, response=True)
                     if response.status_code == 201:
                         voters_pk.append(response.json().get('user_pk'))
                     else:
                         invalid_voters.append(username)
                 return voters_pk,invalid_voters
             else:
-                return Response({'This file format is not supported, try a .csv or .xlsx'}, status=ST_400)
+                return None,None
 
         data = {'username': user, 'password': password}
-        response = requests.post(HOST + '/authentication/login/', data=data)
+        response = mods.post('authentication/login', json=data, response=True)
         token = response.json()
         if not token.get('token') :
             return Response({'This user is incorrect, try again'}, status=ST_401)
@@ -117,20 +118,18 @@ class CensusView(APIView,TemplateView):
         voters_pk = []
         invalid_voters = []
         voters_pk,invalid_voters = create_voters(request)
+        if(voters_pk is None or invalid_voters is None):
+            return Response({'This file format is not supported, try a .csv or .xlsx'}, status=ST_400)
 
         def add_census(voters_pk, voting_pk):
             data = {'username': user, 'password': password}
-            response = requests.post(HOST + '/authentication/login/', data=data)
+            response = mods.post('authentication/login', json=data, response=True)
             token = response.json()
-
-            data2 = {'voters': voters_pk, 'voting_id': voting_pk}
-            auth = {'Authorization': 'Token ' + token.get('token')}
-            response = requests.post(HOST + '/census/', json=data2, headers=auth)
-
+            data2 = {'voters': voters_pk, 'voting_id': voting_pk, 'Token ': token['token']}
+            response = mods.post('census', json=data2, response=True, HTTP_AUTHORIZATION='Token ' + token['token'])
         add_census(voters_pk, votation)
         return Response({'Votación poblada satisfactoriamente, '+ str(len(voters_pk))+ ' votantes añadidos' }, status=ST_201)
 
-   
 def export_census(request, voting_id):
     if not request.user.is_staff:
         template = loader.get_template('errors.html')
